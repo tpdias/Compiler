@@ -5,7 +5,8 @@
 #include "tokens.h"
 %}
 
-
+%x MLCOMMENT
+%x SLCOMMENT
 
 %%
     
@@ -28,5 +29,22 @@
     ">="                     { return OPERATOR_GE; }
     "=="                     { return OPERATOR_EQ; }
     "!="                     { return OPERATOR_DIF; }
-
+	
+    [a-zA-Z_0-9]+            { return TK_IDENTIFIER; }
+    
+    [0-9]+                   { return LIT_INT; }
+    
+    "//"                     { BEGIN(SLCOMMENT); }
+    "///"                    { BEGIN(MLCOMMENT); }
+    
+    "\n"                     { ++lineNumber; }
+    .                        { return TOKEN_ERROR; }
+    
+    <SLCOMMENT>"\n"            { ++lineNumber; BEGIN(INITIAL); }
+    <SLCOMMENT>.
+    
+    <MLCOMMENT>"\n"            { ++lineNumber; }
+    <MLCOMMENT>"\\\"           { BEGIN(INITIAL); }
+    <MLCOMMENT>.
+    
 %%

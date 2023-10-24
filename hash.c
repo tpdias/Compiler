@@ -20,30 +20,29 @@ int hashAddress(char *text) {
 }
 
 HASH_NODE *hashInsert(int type, char *text) {
-    int address = hashAddress(text);
-        
-        // Create a new node
-        HASH_NODE* newNode = (HASH_NODE*)malloc(sizeof(HASH_NODE));
-        newNode->type = type;
-        newNode->text = strdup(text); // Make a copy of the text
-        
-        // Insert the node into the hash table
-        newNode->next = Table[address];
-        Table[address] = newNode;
-        
-        return newNode;
+    HASH_NODE *newNode;
+    int address;
+    
+    newNode = (HASH_NODE*) calloc(1,sizeof(HASH_NODE));
+    newNode->type = type;
+    newNode->text = (char*) calloc(strlen(yytext) + 1, sizeof(char));
+    strcopy(newNode->text, text);
+    newNode->next = 0;
+    
+    address = hashAddress(text);
+    newNode->text = Table[address];
+    Table[address] = newNode;
+    return newNode;
 }
 
 void hashPrint(void) {
     int i;
-    for (i = 0; i < HASH_SIZE; ++i) {
-        HASH_NODE* currentNode = Table[i];
-        if (currentNode != NULL) {
-            printf("Hash Table Position %d:\n", i);
-            while (currentNode != NULL) {
-                printf("  Type: %d, Text: %s\n", currentNode->type, currentNode->text);
-                currentNode = currentNode->next;
-            }
+    HASH_NODE *node;
+    
+    for (i = 0; i<HASH_SIZE; ++i) {
+        for (node=Table[i]; node; node = node->next) {
+            printf("Table[%d] has %d", i, node->type);
         }
     }
+    
 }

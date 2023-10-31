@@ -51,11 +51,13 @@ void initMe(void) {
 [0-9]+"."[0-9]+           { hashInsert(3, yytext); return LIT_REAL; }
 
 [,;()[\]{}=+\-*/%<>&|~] { return yytext[0]; }
+
 \"(\\.|[^\"\n])*\" { hashInsert(4, yytext); return LIT_STRING; }
-" "          {}
-[/t]         {}
+
+" "
+[\t]
 "\n"         { ++lineNumber; }
-"."         { return TOKEN_ERROR; }
+.         { return TOKEN_ERROR; }
 
  <SLCOMMENT>"\n"     { ++lineNumber; BEGIN(INITIAL); }
  <SLCOMMENT>.

@@ -1,0 +1,25 @@
+char // char
+int // int
+float // float
+Char int float // identifier int float
+code // code
+if else while input print return
+2139 // lit int
+astasd lit_ident thiago2605 thiAgo_2605__aa _teste 92teste// literal identifiers
+// single line comment
+/// multi line comment
+26
+\\\
+'s' // lit char
+4153.123 // lit real
+"string" // lit string
+"String com \n e \""
+String
+// 16 lines
+9
+\\
+Teste.t;eu;23
+/////
+>=
+<=;==;!=;
+[](){};

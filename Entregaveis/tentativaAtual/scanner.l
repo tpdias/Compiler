@@ -3,18 +3,17 @@
     int lineNumber = 1;
     int running = 1;
     int token;
+    
+#include <stdio.h>
+#include "y.tab.h"
 #include "hash.c"
-#include "tokens.h"
+int yyparse();
 
-int getLineNumber(void) {
-    return lineNumber;
-}
-int isRunning(void) {
-    return running;
-}
-void initMe(void) {
-    hashInit;
-}
+
+int getLineNumber();
+int isRunning();
+void initMe();
+
 %}
 
 %x MLCOMMENT
@@ -48,14 +47,16 @@ void initMe(void) {
 
 "'"[a-zA-Z0-9]"'"        { hashInsert(2, yytext); return LIT_CHAR; }
     
-[0-9]+"."[0-9]+           { hashInsert(3, yytext); return LIT_REAL; }
+[0-9]+"."[0-9]+           { hashInsert(3, yytext); return LIT_FLOAT; }
 
 [,;()[\]{}=+\-*/%<>&|~] { return yytext[0]; }
+
 \"(\\.|[^\"\n])*\" { hashInsert(4, yytext); return LIT_STRING; }
-" "          {}
-[/t]         {}
+
+" "
+[\t]
 "\n"         { ++lineNumber; }
-"."         { return TOKEN_ERROR; }
+.         { return TOKEN_ERROR; }
 
  <SLCOMMENT>"\n"     { ++lineNumber; BEGIN(INITIAL); }
  <SLCOMMENT>.
@@ -66,6 +67,17 @@ void initMe(void) {
 %%
     
 
+
+int getLineNumber(void) {
+    return lineNumber;
+}
+int isRunning(void) {
+    return running;
+}
+void initMe(void) {
+    hashInit();
+}
+    
 #include "main.c"
 
 
@@ -73,4 +85,5 @@ int yywrap() {
     running = 0;
     return 1;
 }
+
 

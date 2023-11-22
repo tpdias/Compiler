@@ -75,7 +75,7 @@ int isRunning(void) {
     return running;
 }
 void initMe(void) {
-    hashInit;
+    hashInit();
 }
     
 #include "main.c"

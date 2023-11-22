@@ -8,7 +8,6 @@ HASH_NODE* Table[HASH_SIZE];
 
 
 void hashInit(void) {
-    printf("inicializado tabela hash\n");
     int i;
     for( i = 0; i < HASH_SIZE; ++i )
         Table[i] = 0;

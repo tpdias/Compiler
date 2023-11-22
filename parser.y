@@ -9,6 +9,12 @@
     
 %}
 
+%union
+%{
+    HASH* symbol;
+    AST* ast;
+%}
+
 %token KW_CHAR
 %token KW_INT
 %token KW_FLOAT

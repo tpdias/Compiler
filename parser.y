@@ -9,12 +9,6 @@
     
 %}
 
-%union
-%{
-    HASH* symbol;
-    AST* ast;
-%}
-
 %token KW_CHAR
 %token KW_INT
 %token KW_FLOAT
@@ -82,17 +76,20 @@
     | LIT_FLOAT
     ;
     
-    fundec: type TK_IDENTIFIER '(' firstparam ')' ';'
+    fundec: type TK_IDENTIFIER '(' parameters ')' ';'
     ;
     
-    firstparam: type TK_IDENTIFIER lparam
-    |
+    parameters: 
+    | param lastparam
     ;
     
-    lparam: ',' type TK_IDENTIFIER
-    |
+    lastparam: 
+    | ',' param lastparam
     ;
-    
+
+    param: type TK_IDENTIFIER
+    ;
+
     lcode: KW_CODE TK_IDENTIFIER block lcode
     |
     ;

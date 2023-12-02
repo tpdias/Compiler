@@ -17,6 +17,14 @@ AST* astCreate(int type, HASH_NODE* symbol,AST* son0, AST* son1, AST* son2, AST*
 void astprint(AST* node, int level) {
     if (node == 0) return;
     int i;
-    for (i = 0; i < level; ++i) printf("  ");
+    for (i = 0; i < level; ++i) fprintf(stderr,"  ");
     printf("AST(");
+    switch (node->type) {
+        case AST_SYMBOL: fprintf(stderr, "AST_SYMBOL"); break;
+        case AST_ADD: fprintf(stderr, "AST_ADD"); break;
+        case AST_SUB: fprintf(stderr, "AST_SUB"); break;
+        default: fprintf(stderr, "UNKNOWN"); break;
+    }
+    fprintf(stderr,", %s\n", node->symbol?node->symbol->text:"");
+    for(i = 0; i < MAX_SONS; ++i) astprint(node->son[i], level+1);
 }

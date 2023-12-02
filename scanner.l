@@ -1,14 +1,17 @@
 %{
     //Thiago Parisotto Dias
-    int lineNumber = 1;
-    int running = 1;
-    int token;
-    
-#include <stdio.h>
-#include "y.tab.h"
-#include "hash.c"
-int yyparse();
 
+    
+#include "y.tab.h"
+#include "hash.h"
+#include "ast.h"
+#include <stdio.h>
+
+int lineNumber = 1;
+int running = 1;
+int token;
+
+int yyparse();
 
 int getLineNumber();
 int isRunning();

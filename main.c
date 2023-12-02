@@ -1,6 +1,12 @@
 // Thiago Parisotto Dias
 #include <stdio.h>
 #include <stdlib.h>
+extern FILE* yyin;
+extern int isRunning();
+extern int getLineNumber();
+extern int yyparse();
+extern void initMe();
+extern void hashPrint();
 
 int main(int argc, char **argv) {
     //se não tiver 2 args

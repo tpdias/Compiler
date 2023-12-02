@@ -1,13 +1,19 @@
 %{
-    // Thiago Parisotto Dias
-    #include <stdio.h>
-    #include <stdlib.h>
-    
-    int yylex();
-    int yyerror();
-    extern int getLineNumber();
-    
+// Thiago Parisotto Dias
+#include "ast.h"
+#include "hash.h"
+
+int yylex();
+int yyerror(char* err);
+extern int getLineNumber();
+
 %}
+
+%union
+{
+HASH_NODE* symbol;
+AST* ast;
+}
 
 %token KW_CHAR
 %token KW_INT
@@ -151,7 +157,7 @@
 %%
     
     
-int yyerror() {
+int yyerror(char* err) {
     fprintf(stderr, "Erro na linha %d\n", getLineNumber());
     exit(3);
 }

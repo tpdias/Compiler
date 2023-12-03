@@ -9,7 +9,6 @@
 
 int lineNumber = 1;
 int running = 1;
-int token;
 
 int yyparse();
 

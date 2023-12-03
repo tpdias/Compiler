@@ -1,5 +1,7 @@
 %{
 // Thiago Parisotto Dias
+#include <stdlib.h>
+#include <stdio.h>
 #include "ast.h"
 #include "hash.h"
 
@@ -7,12 +9,13 @@ int yylex();
 int yyerror(char* err);
 extern int getLineNumber();
 
+AST* root; 
 %}
 
 %union
 {
-HASH_NODE* symbol;
-AST* ast;
+struct hash_node* symbol;
+struct ast_node* ast;
 }
 
 %token KW_CHAR

@@ -94,10 +94,10 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 13 "parser.y"
+#line 16 "parser.y"
 {
-HASH_NODE* symbol;
-AST* ast;
+struct hash_node* symbol;
+struct ast_node* ast;
 }
 /* Line 1529 of yacc.c.  */
 #line 104 "y.tab.h"

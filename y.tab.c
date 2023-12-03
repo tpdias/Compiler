@@ -123,6 +123,8 @@
 #line 1 "parser.y"
 
 // Thiago Parisotto Dias
+#include <stdlib.h>
+#include <stdio.h>
 #include "ast.h"
 #include "hash.h"
 
@@ -130,6 +132,7 @@ int yylex();
 int yyerror(char* err);
 extern int getLineNumber();
 
+AST* root;
 
 
 /* Enabling traces.  */
@@ -152,13 +155,13 @@ extern int getLineNumber();
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 13 "parser.y"
+#line 16 "parser.y"
 {
-HASH_NODE* symbol;
-AST* ast;
+struct hash_node* symbol;
+struct ast_node* ast;
 }
 /* Line 193 of yacc.c.  */
-#line 162 "y.tab.c"
+#line 165 "y.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -171,7 +174,7 @@ AST* ast;
 
 
 /* Line 216 of yacc.c.  */
-#line 175 "y.tab.c"
+#line 178 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -482,13 +485,13 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    54,    54,    57,    58,    61,    62,    63,    67,    71,
-      72,    75,    76,    77,    80,    81,    82,    85,    88,    89,
-      92,    93,    96,    99,   100,   103,   106,   107,   110,   111,
-     112,   113,   114,   115,   116,   119,   120,   123,   124,   125,
-     126,   127,   128,   129,   130,   131,   132,   133,   134,   135,
-     136,   137,   138,   139,   140,   141,   144,   145,   148,   149,
-     152,   153,   154
+       0,    57,    57,    60,    61,    64,    65,    66,    70,    74,
+      75,    78,    79,    80,    83,    84,    85,    88,    91,    92,
+      95,    96,    99,   102,   103,   106,   109,   110,   113,   114,
+     115,   116,   117,   118,   119,   122,   123,   126,   127,   128,
+     129,   130,   131,   132,   133,   134,   135,   136,   137,   138,
+     139,   140,   141,   142,   143,   144,   147,   148,   151,   152,
+     155,   156,   157
 };
 #endif
 
@@ -1504,7 +1507,7 @@ yyreduce:
     {
       
 /* Line 1267 of yacc.c.  */
-#line 1508 "y.tab.c"
+#line 1511 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1718,7 +1721,7 @@ yyreturn:
 }
 
 
-#line 157 "parser.y"
+#line 160 "parser.y"
 
     
     

@@ -862,7 +862,7 @@ YY_RULE_SETUP
 case 11:
 YY_RULE_SETUP
 #line 38 "scanner.l"
-{ hashInsert(1, yytext); return LIT_INT; }
+{ yylval.symbol = hashInsert(LIT_INT, yytext); return LIT_INT; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
@@ -887,7 +887,7 @@ YY_RULE_SETUP
 case 16:
 YY_RULE_SETUP
 #line 45 "scanner.l"
-{ return(TK_IDENTIFIER); }
+{ yylval.symbol = hashInsert(TK_IDENTIFIER, yytext); return(TK_IDENTIFIER); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
@@ -902,12 +902,12 @@ YY_RULE_SETUP
 case 19:
 YY_RULE_SETUP
 #line 50 "scanner.l"
-{ hashInsert(2, yytext); return LIT_CHAR; }
+{ yylval.symbol = hashInsert(LIT_CHAR, yytext); return LIT_CHAR; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 52 "scanner.l"
-{ hashInsert(3, yytext); return LIT_FLOAT; }
+{ yylval.symbol = hashInsert(LIT_FLOAT, yytext); return LIT_FLOAT; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
@@ -917,7 +917,7 @@ YY_RULE_SETUP
 case 22:
 YY_RULE_SETUP
 #line 56 "scanner.l"
-{ hashInsert(4, yytext); return LIT_STRING; }
+{ yylval.symbol = hashInsert(LIT_STRING, yytext); return LIT_STRING; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP

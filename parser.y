@@ -7,6 +7,7 @@
 
 int yylex();
 int yyerror(char* err);
+AST* getRoot();
 extern int getLineNumber();
 
 AST* root; 
@@ -36,11 +37,11 @@ struct ast_node* ast;
 %token OPERATOR_EQ
 %token OPERATOR_DIF
 
-%token TK_IDENTIFIER
-%token LIT_INT
-%token LIT_FLOAT // aqui tem que ser lit_real??
-%token LIT_CHAR
-%token LIT_STRING
+%token <symbol> TK_IDENTIFIER
+%token <symbol> LIT_INT
+%token <symbol> LIT_FLOAT 
+%token <symbol> LIT_CHAR
+%token <symbol> LIT_STRING
 
 %token TOKEN_ERROR
 
@@ -49,117 +50,127 @@ struct ast_node* ast;
 %left '+' '-'
 %left '*' '/'
 
+%type <ast> program
+%type <ast> ldec
+%type <ast> dec
+%type <ast> lvec
+%type <ast> type
+%type <ast> lit
+%type <ast> parameters
+%type <ast> lastparam
+%type <ast> param
+%type <ast> lcode
+%type <ast> block
+%type <ast> lcmd
+%type <ast> cmd
+%type <ast> attr
+%type <ast> expr
+%type <ast> l_args
+%type <ast> l_args_end
+
 %start program
 
-
 %%
     
-    program: ldec lcode
+    program: ldec lcode                                                     {root=$$; astPrint(root, 0);}
     ;
     
-    ldec: dec ldec
-    |
+    ldec: dec ldec                                                          {$$=astCreate(AST_LDEC, 0, $1, $2, 0, 0);}
+    |                                                                       {$$=0;}
     ;
     
-    dec: type TK_IDENTIFIER '=' lit ';'
-    | vetdec
-    | fundec
+    dec: type TK_IDENTIFIER '=' lit ';'                                     {$$=astCreate(AST_DECVAR, $2, $1, $4, 0, 0);}
+    | type TK_IDENTIFIER '[' LIT_INT ']' lvec ';'                           {$$=astCreate(AST_DECVEC, $2, $1, astCreate(AST_SYMBOL, $4, 0, 0, 0, 0), $6, 0);}                                                                
+    | type TK_IDENTIFIER '(' parameters ')' ';'                             {$$=astCreate(AST_DECFUNC, $2, $1, $4, 0, 0);}                                                                
     ;
     
-    
-    vetdec: type TK_IDENTIFIER '[' LIT_INT ']' lvec ';'
+    lvec: lit lvec                                                          {$$=astCreate(AST_VECLST, 0, $1, $2, 0, 0);}
+    |                                                                       {$$=0;}
     ;
     
-    
-    lvec: lit lvec
-    |
+    type: KW_INT                                                            {$$=astCreate(AST_TYPEINT, 0, 0, 0, 0, 0);}
+    | KW_CHAR                                                               {$$=astCreate(AST_TYPECHAR, 0, 0, 0, 0, 0);}
+    | KW_FLOAT                                                              {$$=astCreate(AST_TYPEFLOAT, 0, 0, 0, 0, 0);}
     ;
     
-    type: KW_INT
-    | KW_CHAR
-    | KW_FLOAT
-    ;
-    
-    lit: LIT_INT
-    | LIT_CHAR
-    | LIT_FLOAT
-    ;
-    
-    fundec: type TK_IDENTIFIER '(' parameters ')' ';'
-    ;
-    
-    parameters: 
-    | param lastparam
-    ;
-    
-    lastparam: 
-    | ',' param lastparam
+    lit: LIT_INT                                                            {$$=astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+    | LIT_CHAR                                                              {$$=astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+    | LIT_FLOAT                                                             {$$=astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
     ;
 
-    param: type TK_IDENTIFIER
+    parameters:                                                             {$$=0;}
+    | param lastparam                                                       {$$=astCreate(AST_PARAMINIT, 0, $1, $2, 0, 0);}
+    ;
+    
+    lastparam:                                                              {$$=0;}
+    | ',' param lastparam                                                   {$$=astCreate(AST_PARAMLST, 0, $2, $3, 0, 0);}
     ;
 
-    lcode: KW_CODE TK_IDENTIFIER block lcode
-    |
+    param: type TK_IDENTIFIER                                               {$$=astCreate(AST_PARAM, $2, $1, 0, 0, 0);}
+    ;
+
+    lcode: KW_CODE TK_IDENTIFIER block lcode                                {$$=astCreate(AST_LCODE, $2, $3, $4, 0, 0);}
+    |                                                                       {$$=0;}
     ;
     
-    block: '{' lcmd '}'
+    block: '{' lcmd '}'                                                     {$$=astCreate(AST_BLOCK, 0, $2, 0, 0, 0);}
     ;
     
-    lcmd: cmd lcmd
-    |
+    lcmd: cmd lcmd                                                          {$$=astCreate(AST_CMDLST, 0, $1, $2, 0, 0);}
+    |                                                                       {$$=0;}
     ;
     
-    cmd: block
-    | attr ';'
-    | ctrlflx
-    | KW_PRINT LIT_STRING ';'
-    | KW_PRINT expr ';'
-    | KW_RETURN expr ';'
-    | ';'
+    cmd: block                                                              {$$=$1;}
+    | attr ';'                                                              {$$=astCreate(AST_ATTR, 0, $1, 0, 0, 0);}
+    | KW_PRINT LIT_STRING ';'                                               {$$=astCreate(AST_PRINT, 0, $2, 0, 0, 0);}                
+    | KW_PRINT expr ';'                                                     {$$=astCreate(AST_PRINT, 0, $2, 0, 0, 0);}        
+    | KW_RETURN expr ';'                                                    {$$=astCreate(AST_RETURN, 0, $2, 0, 0, 0);}            
+    | KW_IF '(' expr ')' cmd                                                {$$=astCreate(AST_IF, 0, $3, $5, 0, 0);}
+    | KW_IF '(' expr ')' cmd KW_ELSE cmd                                    {$$=astCreate(AST_IF, 0, $3, $5, $7, 0);}
+    | KW_WHILE '(' expr ')' cmd                                             {$$=astCreate(AST_WHILE, 0, $3, $5, 0, 0);}
+    | ';'                                                                   {$$=0;}
     ;
     
-    attr: TK_IDENTIFIER '=' expr
-    | TK_IDENTIFIER '[' expr ']' '=' expr
+    attr: TK_IDENTIFIER '=' expr                                            {$$=astCreate(AST_ATTREXPR, $1, $3, 0, 0, 0);}
+    | TK_IDENTIFIER '[' expr ']' '=' expr                                   {$$=astCreate(AST_ATTRVEC, $1, $3, $6, 0, 0);}
     ;
     
-    expr : TK_IDENTIFIER
-        | TK_IDENTIFIER '[' expr ']'
-        | TK_IDENTIFIER '(' l_args ')'
-        | lit
-        | expr '+' expr
-        | expr '-' expr
-        | expr '*' expr
-        | expr '/' expr
-        | expr '<' expr
-        | expr '>' expr
-        | expr OPERATOR_LE expr
-        | expr OPERATOR_GE expr
-        | expr OPERATOR_EQ expr
-        | expr OPERATOR_DIF expr
-        | expr OPERATOR_AND expr
-        | expr OPERATOR_OR expr
-        | OPERATOR_NOT expr
-        | '(' expr ')'
-        | KW_INPUT '(' type ')'
+    expr : TK_IDENTIFIER                                                    {$$=astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+        | TK_IDENTIFIER '[' expr ']'                                        {$$=astCreate(AST_VEC, $1, $3, 0, 0, 0);}
+        | TK_IDENTIFIER '(' l_args ')'                                      {$$=astCreate(AST_FUNC, $1, $3, 0, 0, 0);}
+        | lit                                                               {$$=$1;}
+        | expr '+' expr                                                     {$$=astCreate(AST_ADD, 0, $1, $3, 0, 0);}
+        | expr '-' expr                                                     {$$=astCreate(AST_SUB, 0, $1, $3, 0, 0);}
+        | expr '*' expr                                                     {$$=astCreate(AST_MUL, 0, $1, $3, 0, 0);}
+        | expr '/' expr                                                     {$$=astCreate(AST_DIV, 0, $1, $3, 0, 0);}
+        | expr '<' expr                                                     {$$=astCreate(AST_LESS, 0, $1, $3, 0, 0);}
+        | expr '>' expr                                                     {$$=astCreate(AST_GREATER, 0, $1, $3, 0, 0);}
+        | expr OPERATOR_LE expr                                             {$$=astCreate(AST_LE, 0, $1, $3, 0, 0);}                            
+        | expr OPERATOR_GE expr                                             {$$=astCreate(AST_GE, 0, $1, $3, 0, 0);}                                                
+        | expr OPERATOR_EQ expr                                             {$$=astCreate(AST_EQ, 0, $1, $3, 0, 0);}                                                
+        | expr OPERATOR_DIF expr                                            {$$=astCreate(AST_DIF, 0, $1, $3, 0, 0);}                                                                        
+        | expr OPERATOR_AND expr                                            {$$=astCreate(AST_AND, 0, $1, $3, 0, 0);}                                                                        
+        | expr OPERATOR_OR expr                                             {$$=astCreate(AST_OR, 0, $1, $3, 0, 0);}                                                
+        | OPERATOR_NOT expr                                                 {$$=astCreate(AST_NOT, 0, $2, 0, 0, 0);}                        
+        | '(' expr ')'                                                      {$$=astCreate(AST_PARENTESES, 0, $2, 0, 0, 0);}
+        | KW_INPUT '(' type ')'                                             {$$=astCreate(AST_INPUT, 0, $3, 0, 0 ,0);}        
         ;
         
-    l_args :
-           | expr l_args_end
+    l_args :                                                                {$$=0;}
+           | expr l_args_end                                                {$$=astCreate(AST_ARGLST, 0, $1, $2, 0, 0);}
            ;
 
-    l_args_end :
-       | ',' expr l_args_end
+    l_args_end :                                                            {$$=0;}
+       | ',' expr l_args_end                                                {$$=astCreate(AST_ARGLSTEND, 0, $2, $3, 0, 0);}
        ;
        
-    ctrlflx: KW_IF '(' expr ')' cmd
-       | KW_IF '(' expr ')' cmd KW_ELSE cmd
-       | KW_WHILE '(' expr ')' cmd
-       ;
+    
     
 %%
     
-    
+AST* getRoot() {
+    return root;
+}
 int yyerror(char* err) {
     fprintf(stderr, "Erro na linha %d\n", getLineNumber());
     exit(3);

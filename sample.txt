@@ -4,9 +4,9 @@ char a=15;
 char x='x';
 char c='x';
 char d=100;
-int a,
-int b,
-int c;
+int a = 5;
+int b = 3;
+int c = 2;
 int 1a='A';
 int i=1;
 int v[10] 'a' 0'b'0 0 0 0 0 0 0;
@@ -15,7 +15,7 @@ float f=2.5;
 int a=0;
 
 int main();
-int incn (int x, int n );
+int incn (int x, int n, int a);
 
 ///
 Este eh um comentario

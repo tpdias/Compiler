@@ -62,9 +62,7 @@ void astPrint(AST* node, int level) {
         case AST_FUNC: fprintf(stderr, "AST_FUNC"); break;
         case AST_ATTREXPR: fprintf(stderr, "AST_ATTREXPR"); break;
         case AST_ATTRVEC: fprintf(stderr, "AST_ATTRVEC"); break;
-        case AST_VECEND: fprintf(stderr, "AST_VECEND"); break;
-        case AST_PROG: fprintf(stderr, "AST_PROG"); break;
-        case AST_LDECINIT: fprintf(stderr, "AST_LDECINIT"); break;
+
 
         default: fprintf(stderr, "UNKNOWN"); break;
     }
@@ -174,7 +172,7 @@ void uncompile(AST* node, FILE* output) {
             break;
         case AST_PARAM:
             uncompile(node->son[0], output);
-            fprintf(output, " %s", node->symbol->text);
+            fprintf(output, " ");
             uncompile(node->son[1], output);
             break;
         case AST_BLOCK:
@@ -230,22 +228,21 @@ void uncompile(AST* node, FILE* output) {
             fprintf(output, "char");
             break;
         case AST_VECLST:
-            fprintf(output, " ");
             uncompile(node->son[0], output);
+            fprintf(output, ",");
             uncompile(node->son[1], output);
             break;
         case AST_PARAMINIT:
             uncompile(node->son[0], output);
+            fprintf(output, " ");
             uncompile(node->son[1], output);
             break;
         case AST_PARAMLST:
-            fprintf(output, ", ");
             uncompile(node->son[0], output);
+            fprintf(output, ",");
             uncompile(node->son[1], output);
             break;
         case AST_LCODE:
-            fprintf(output, "code ");
-            fprintf(output, "%s", node->symbol->text);
             uncompile(node->son[0], output);
             uncompile(node->son[1], output);
             break;
@@ -291,16 +288,6 @@ void uncompile(AST* node, FILE* output) {
             uncompile(node->son[1], output);
             fprintf(output, "] = ");
             uncompile(node->son[2], output);
-            break;
-        case AST_VECEND:
-            uncompile(node->son[0], output);
-            break;
-        case AST_PROG:
-            uncompile(node->son[0], output);
-            break;
-        case AST_LDECINIT:
-            uncompile(node->son[0], output);
-            uncompile(node->son[1], output);
             break;
         default: fprintf(output, "UNKNOWN"); break;
     }

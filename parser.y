@@ -67,12 +67,14 @@ struct ast_node* ast;
 %type <ast> expr
 %type <ast> l_args
 %type <ast> l_args_end
-
+%type <ast> ldecinit
 %start program
 
 %%
-    
-    program: ldec lcode                                                     {root=$$; astPrint(root, 0);}
+    program: ldecinit                                                       {root = $$; astPrint(root,0);}
+    ;
+
+    ldecinit: ldec lcode                                                     {$$ = astCreate(AST_LDECINIT, 0, $1, $2, 0, 0);}
     ;
     
     ldec: dec ldec                                                          {$$=astCreate(AST_LDEC, 0, $1, $2, 0, 0);}
@@ -84,9 +86,10 @@ struct ast_node* ast;
     | type TK_IDENTIFIER '(' parameters ')' ';'                             {$$=astCreate(AST_DECFUNC, $2, $1, $4, 0, 0);}                                                                
     ;
     
-    lvec: lit lvec                                                          {$$=astCreate(AST_VECLST, 0, $1, $2, 0, 0);}
+    lvec: lit lvec                                                       {$$=astCreate(AST_VECLST, 0, $1, $2, 0, 0);}
     |                                                                       {$$=0;}
     ;
+
     
     type: KW_INT                                                            {$$=astCreate(AST_TYPEINT, 0, 0, 0, 0, 0);}
     | KW_CHAR                                                               {$$=astCreate(AST_TYPECHAR, 0, 0, 0, 0, 0);}

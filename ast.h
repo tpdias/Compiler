@@ -54,7 +54,7 @@
 #define AST_VECEND 45
 #define AST_PROG 46
 #define AST_LDECINIT 47
-
+#define AST_PRINTEXP 48
 typedef struct ast_node
 {
     int type;

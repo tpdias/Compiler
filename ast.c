@@ -65,6 +65,7 @@ void astPrint(AST* node, int level) {
         case AST_VECEND: fprintf(stderr, "AST_VECEND"); break;
         case AST_PROG: fprintf(stderr, "AST_PROG"); break;
         case AST_LDECINIT: fprintf(stderr, "AST_LDECINIT"); break;
+        case AST_PRINTEXP: fprintf(stderr, "AST_PRINTEXP"); break;
 
         default: fprintf(stderr, "UNKNOWN"); break;
     }
@@ -271,29 +272,26 @@ void uncompile(AST* node, FILE* output) {
             uncompile(node->son[0], output);
             break;
         case AST_VEC:
+            fprintf(output, "%s[", node->symbol->text);
             uncompile(node->son[0], output);
-            fprintf(output, "[");
-            uncompile(node->son[1], output);
             fprintf(output, "]");
             break;
         case AST_FUNC:
+            fprintf(output, "%s(", node->symbol->text);
             uncompile(node->son[0], output);
-            fprintf(output, "(");
-            uncompile(node->son[1], output);
             fprintf(output, ")");
             break;
         case AST_ATTREXPR:
+            fprintf(output, "%s = ", node->symbol->text);
             uncompile(node->son[0], output);
-            fprintf(output, " = ");
-            uncompile(node->son[1], output);
             fprintf(output, ";\n");
             break;
         case AST_ATTRVEC:
+            fprintf(output, "%s[", node->symbol->text);
             uncompile(node->son[0], output);
-            fprintf(output, "[");
-            uncompile(node->son[1], output);
             fprintf(output, "] = ");
-            uncompile(node->son[2], output);
+            uncompile(node->son[1], output);
+            fprintf(output, ";\n");
             break;
         case AST_VECEND:
             uncompile(node->son[0], output);
@@ -305,6 +303,12 @@ void uncompile(AST* node, FILE* output) {
             uncompile(node->son[0], output);
             uncompile(node->son[1], output);
             break;
+        case AST_PRINTEXP:
+        fprintf(output, "print ");
+        uncompile(node->son[0], output);
+        fprintf(output, ";\n");
+        break;
+
         default: fprintf(output, "UNKNOWN"); break;
     }
 }

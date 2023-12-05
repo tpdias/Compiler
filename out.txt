@@ -1,7 +1,0 @@
-int a = 5;
-int a[20];
-int a[20] 2 2 5 6;
-int a(int a, float b, char c);
-code main{
-5 + 5 =  = ;
-}

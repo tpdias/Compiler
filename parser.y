@@ -68,6 +68,7 @@ struct ast_node* ast;
 %type <ast> l_args
 %type <ast> l_args_end
 %type <ast> ldecinit
+
 %start program
 
 %%
@@ -99,6 +100,7 @@ struct ast_node* ast;
     lit: LIT_INT                                                            {$$=astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
     | LIT_CHAR                                                              {$$=astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
     | LIT_FLOAT                                                             {$$=astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+    | LIT_STRING                                                            {$$=astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
     ;
 
     parameters:                                                             {$$=0;}
@@ -124,8 +126,8 @@ struct ast_node* ast;
     ;
     
     cmd: block                                                              {$$=$1;}
-    | attr ';'                                                              {$$=astCreate(AST_ATTR, 0, $1, 0, 0, 0);}
-    | KW_PRINT LIT_STRING ';'                                               {$$=astCreate(AST_PRINT, 0, $2, 0, 0, 0);}                
+    | attr ';'                                                              {$$=$1;}
+    | KW_PRINT lit ';'                                               {$$=astCreate(AST_PRINT, 0, $2, 0, 0, 0);}                
     | KW_PRINT expr ';'                                                     {$$=astCreate(AST_PRINT, 0, $2, 0, 0, 0);}        
     | KW_RETURN expr ';'                                                    {$$=astCreate(AST_RETURN, 0, $2, 0, 0, 0);}            
     | KW_IF '(' expr ')' cmd                                                {$$=astCreate(AST_IF, 0, $3, $5, 0, 0);}

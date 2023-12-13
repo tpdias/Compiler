@@ -16,6 +16,7 @@ int a=0;
 
 int main();
 int incn (int x, int n, int a);
+int incing(int x);
 
 ///
 Este eh um comentario
@@ -25,6 +26,9 @@ linhas
 
 code main {
   {
+  a = f(a);
+
+
   1a = 0;
   d = d - i;
   d = 5;

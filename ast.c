@@ -79,6 +79,7 @@ void astPrint(AST* node, int level) {
 }
 
 void uncompile(AST* node, FILE* output) {
+    
     if (node == 0) return;
     int i;
     switch (node->type) {

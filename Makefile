@@ -7,8 +7,11 @@
 # and #include "main.c" in the last part of the scanner.l
 #
 
-etapa3: hash.o ast.o y.tab.o lex.yy.o 
-	gcc -Wall -o etapa3 hash.o ast.o y.tab.o lex.yy.o 
+etapa3: hash.o ast.o y.tab.o lex.yy.o semantic.o
+	gcc -Wall -o etapa3 hash.o ast.o y.tab.o lex.yy.o semantic.o
+
+semantic.o: semantic.c
+	gcc -c semantic.c
 
 hash.o: hash.c
 	gcc -c hash.c

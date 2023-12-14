@@ -4,13 +4,12 @@
 #include <stdio.h>
 #include "ast.h"
 #include "hash.h"
+#include "semantic.h"
 
 int yylex();
 int yyerror(char* err);
-AST* getRoot();
 extern int getLineNumber();
-
-AST* root; 
+AST *root;
 %}
 
 %union
@@ -71,7 +70,15 @@ struct ast_node* ast;
 %start program
 
 %%
-    program: ldecinit                                                       {root = $$; astPrint(root,0);}
+    program: ldecinit                                                       {
+                                                                                root = $$;
+                                                                                astPrint($1,0);
+                                                                                check_and_set_declarations(root);
+                                                                                check_undeclared(root);
+                                                                                //check_usege($1);
+                                                                                //check_operands($1);
+                                                                                //check_misc($1);
+                                                                                }
     ;
 
     ldecinit: ldec lcode                                                     {$$ = astCreate(AST_LDECINIT, 0, $1, $2, 0, 0);}
@@ -168,9 +175,10 @@ struct ast_node* ast;
     
 %%
     
-AST* getRoot() {
+AST *getRoot() {
     return root;
 }
+
 int yyerror(char* err) {
     fprintf(stderr, "Erro na linha %d\n", getLineNumber());
     exit(3);

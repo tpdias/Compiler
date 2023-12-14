@@ -4,6 +4,6 @@ int x[50];
 char d(int a, int b);
 int main();
 int c();
-code main {
-  a = 5;
+code main{
+a = 5;
 }

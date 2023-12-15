@@ -43,7 +43,7 @@
 #define AST_PARAMINIT 34
 #define AST_PARAMLST 35
 #define AST_LCODE 36
-#define AST_ATTR 37
+//#define AST_ATTR 37
 #define AST_ATTREXPR 38
 #define AST_ATTRVEC 39
 #define AST_PARENTESES 40

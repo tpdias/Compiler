@@ -1,9 +1,8 @@
 int a = 0;
-int b = 0;
-int x[50];
-char d(int a, int b);
+int b[50];
 int main();
-int c();
+int teste(int a, int b);
+
 code main {
-  a = 5;
+  a = teste;
 }

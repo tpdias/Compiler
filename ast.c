@@ -54,7 +54,7 @@ void astPrint(AST* node, int level) {
         case AST_PARAMINIT: fprintf(stderr, "AST_PARAMINIT"); break;
         case AST_PARAMLST: fprintf(stderr, "AST_PARAMLST"); break;
         case AST_LCODE: fprintf(stderr, "AST_LCODE"); break;
-        case AST_ATTR: fprintf(stderr, "AST_ATTR"); break;
+        //case AST_ATTR: fprintf(stderr, "AST_ATTR"); break;
         case AST_PARENTESES: fprintf(stderr, "AST_PARENTESES"); break;
         case AST_ARGLST: fprintf(stderr, "AST_ARGLST"); break;
         case AST_ARGLSTEND: fprintf(stderr, "AST_ARGLSTEND"); break;
@@ -253,12 +253,12 @@ void uncompile(AST* node, FILE* output) {
             uncompile(node->son[0], output);
             uncompile(node->son[1], output);
             break;
-        case AST_ATTR:
-            uncompile(node->son[0], output);
-            fprintf(output, " = ");
-            uncompile(node->son[1], output);
-            fprintf(output, ";\n");
-            break;
+        // case AST_ATTR:
+        //     uncompile(node->son[0], output);
+        //     fprintf(output, " = ");
+        //     uncompile(node->son[1], output);
+        //     fprintf(output, ";\n");
+        //     break;
         case AST_PARENTESES:
             fprintf(output, "(");
             uncompile(node->son[0], output);

@@ -1504,9 +1504,9 @@ yyreduce:
                                                                                 astPrint((yyvsp[(1) - (1)].ast),0);
                                                                                 check_and_set_declarations(root);
                                                                                 check_undeclared(root);
-                                                                                //check_usege($1);
-                                                                                //check_operands($1);
-                                                                                //check_misc($1);
+                                                                                check_usage(root);
+                                                                                //check_operands(root);
+                                                                                //check_misc(root);
                                                                                 }
     break;
 

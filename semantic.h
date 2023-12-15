@@ -9,7 +9,7 @@
 
 void check_and_set_declarations(AST *node);
 void check_undeclared(AST *node);
-void check_usege(AST *node);
+void check_usage(AST *node);
 void check_operands(AST *node);
 void check_misc(AST *node);
 

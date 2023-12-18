@@ -76,7 +76,7 @@ struct ast_node* ast;
                                                                                 check_and_set_declarations(root);
                                                                                 check_undeclared(root);
                                                                                 check_usage(root, root);
-                                                                                //check_operands(root);
+                                                                                check_operands(root);
                                                                                 //check_misc(root);
                                                                                 }
     ;

@@ -1,7 +1,8 @@
 int a = 0;
+char c = 'c';
 int main();
 int teste(int a, int b, int c, int d);
 code main{
-a = teste(a,a,a,a);
+a = teste(c,a,a);
 a = tripod();
 }

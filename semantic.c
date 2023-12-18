@@ -95,20 +95,20 @@ void checkFunction(AST* node, AST* root) {
     }
     return;
 }
+
 //comparar parametros
 void compareArguments (AST* node1, AST* node2) {
     if(node1 == 0 && node2 == 0) {
         return;
     }
     if(node1 == 0 || node2 == 0) {
-        fprintf(stderr, "Semantic ERROR: Function called with wrong number of parameters\n");
+        fprintf(stderr, "Semantic ERROR: Function called with wrong type of parameters\n");
         semanticErrors += 1;
         return;
     }
         fprintf(stderr, "Comparing arguments\n");
 
     if(node1->son[0]->symbol->type != node2->son[0]->symbol->type) {
-        fprintf(stderr, "type1 %d, type2 %d\n", node1->son[0]->symbol->type, node2->son[0]->symbol->type);
         fprintf(stderr, "Semantic ERROR: Function called with wrong type of parameters\n");
         semanticErrors += 1;
         return;
@@ -123,7 +123,8 @@ int countParams(AST* node) {
     }
     return 1 + countParams(node->son[1]);
 }
-//recebe a root como parametro, percorre a lista e procura a declaracao text
+
+//recebe a root como parametro, percorre a lista e procura a declaracao da função dada por text
 AST * findFunctionDeclaration(char * text, AST* node) {
     if(node == NULL) {
         return 0;

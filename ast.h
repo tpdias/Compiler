@@ -58,8 +58,10 @@
 typedef struct ast_node
 {
     int type;
+    int datatype;
     HASH_NODE* symbol;
     struct ast_node* son[MAX_SONS];
+    int lineNumber;
 } AST;
 
 AST* astCreate(int type, HASH_NODE* symbol, AST* son0, AST* son1, AST* son2, AST* son3);

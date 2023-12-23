@@ -9,6 +9,7 @@
 int yylex();
 int yyerror(char* err);
 extern int getLineNumber();
+void check_semantic(int semantic_errors);
 AST *root;
 %}
 
@@ -73,11 +74,14 @@ struct ast_node* ast;
     program: ldecinit                                                       {
                                                                                 root = $$;
                                                                                 astPrint($1,0);
+                                                                                hashPrint();
                                                                                 check_and_set_declarations(root);
+                                                                                set_node_types(root);
                                                                                 check_undeclared(root);
                                                                                 check_usage(root, root);
                                                                                 check_operands(root);
-                                                                                //check_misc(root);
+                                                                                check_misc(root);
+                                                                                check_semantic(get_total_semantic_errors());
                                                                                 }
     ;
 
@@ -177,6 +181,13 @@ struct ast_node* ast;
     
 AST *getRoot() {
     return root;
+}
+
+void check_semantic(int semantic_errors) {
+    if(semantic_errors > 0) {
+        fprintf(stderr, "%d, Semantic Errors.\n", semantic_errors);
+        exit(4);
+    }
 }
 
 int yyerror(char* err) {

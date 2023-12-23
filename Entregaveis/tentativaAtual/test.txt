@@ -1,6 +1,6 @@
-
+int a = 0;
+int main();
 code main {
-  {
-  a = f(a);
-}
+  a = 5;
+  return a;
 }

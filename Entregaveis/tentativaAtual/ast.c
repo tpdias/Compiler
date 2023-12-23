@@ -1,4 +1,5 @@
 #include "ast.h"
+extern int getLineNumber();
 
 AST* astCreate(int type, HASH_NODE* symbol,AST* son0, AST* son1, AST* son2, AST* son3) {
     AST* newnode;
@@ -9,6 +10,7 @@ AST* astCreate(int type, HASH_NODE* symbol,AST* son0, AST* son1, AST* son2, AST*
     newnode->son[1] = son1;
     newnode->son[2] = son2;
     newnode->son[3] = son3;
+    newnode->lineNumber = getLineNumber();
     return newnode;
 }
 
@@ -54,7 +56,7 @@ void astPrint(AST* node, int level) {
         case AST_PARAMINIT: fprintf(stderr, "AST_PARAMINIT"); break;
         case AST_PARAMLST: fprintf(stderr, "AST_PARAMLST"); break;
         case AST_LCODE: fprintf(stderr, "AST_LCODE"); break;
-        case AST_ATTR: fprintf(stderr, "AST_ATTR"); break;
+        //case AST_ATTR: fprintf(stderr, "AST_ATTR"); break;
         case AST_PARENTESES: fprintf(stderr, "AST_PARENTESES"); break;
         case AST_ARGLST: fprintf(stderr, "AST_ARGLST"); break;
         case AST_ARGLSTEND: fprintf(stderr, "AST_ARGLSTEND"); break;
@@ -79,6 +81,7 @@ void astPrint(AST* node, int level) {
 }
 
 void uncompile(AST* node, FILE* output) {
+    
     if (node == 0) return;
     int i;
     switch (node->type) {
@@ -252,12 +255,12 @@ void uncompile(AST* node, FILE* output) {
             uncompile(node->son[0], output);
             uncompile(node->son[1], output);
             break;
-        case AST_ATTR:
-            uncompile(node->son[0], output);
-            fprintf(output, " = ");
-            uncompile(node->son[1], output);
-            fprintf(output, ";\n");
-            break;
+        // case AST_ATTR:
+        //     uncompile(node->son[0], output);
+        //     fprintf(output, " = ");
+        //     uncompile(node->son[1], output);
+        //     fprintf(output, ";\n");
+        //     break;
         case AST_PARENTESES:
             fprintf(output, "(");
             uncompile(node->son[0], output);

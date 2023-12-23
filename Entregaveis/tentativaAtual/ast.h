@@ -43,7 +43,7 @@
 #define AST_PARAMINIT 34
 #define AST_PARAMLST 35
 #define AST_LCODE 36
-#define AST_ATTR 37
+//#define AST_ATTR 37
 #define AST_ATTREXPR 38
 #define AST_ATTRVEC 39
 #define AST_PARENTESES 40
@@ -58,8 +58,10 @@
 typedef struct ast_node
 {
     int type;
+    int datatype;
     HASH_NODE* symbol;
     struct ast_node* son[MAX_SONS];
+    int lineNumber;
 } AST;
 
 AST* astCreate(int type, HASH_NODE* symbol, AST* son0, AST* son1, AST* son2, AST* son3);

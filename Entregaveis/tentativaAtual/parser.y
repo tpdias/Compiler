@@ -4,13 +4,13 @@
 #include <stdio.h>
 #include "ast.h"
 #include "hash.h"
+#include "semantic.h"
 
 int yylex();
 int yyerror(char* err);
-AST* getRoot();
 extern int getLineNumber();
-
-AST* root; 
+void check_semantic(int semantic_errors);
+AST *root;
 %}
 
 %union
@@ -71,7 +71,18 @@ struct ast_node* ast;
 %start program
 
 %%
-    program: ldecinit                                                       {root = $$; astPrint(root,0);}
+    program: ldecinit                                                       {
+                                                                                root = $$;
+                                                                                astPrint($1,0);
+                                                                                hashPrint();
+                                                                                check_and_set_declarations(root);
+                                                                                set_node_types(root);
+                                                                                check_undeclared(root);
+                                                                                check_usage(root, root);
+                                                                                check_operands(root);
+                                                                                check_misc(root);
+                                                                                check_semantic(get_total_semantic_errors());
+                                                                                }
     ;
 
     ldecinit: ldec lcode                                                     {$$ = astCreate(AST_LDECINIT, 0, $1, $2, 0, 0);}
@@ -168,9 +179,17 @@ struct ast_node* ast;
     
 %%
     
-AST* getRoot() {
+AST *getRoot() {
     return root;
 }
+
+void check_semantic(int semantic_errors) {
+    if(semantic_errors > 0) {
+        fprintf(stderr, "%d, Semantic Errors.\n", semantic_errors);
+        exit(4);
+    }
+}
+
 int yyerror(char* err) {
     fprintf(stderr, "Erro na linha %d\n", getLineNumber());
     exit(3);

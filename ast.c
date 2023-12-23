@@ -1,4 +1,5 @@
 #include "ast.h"
+extern int getLineNumber();
 
 AST* astCreate(int type, HASH_NODE* symbol,AST* son0, AST* son1, AST* son2, AST* son3) {
     AST* newnode;
@@ -9,6 +10,7 @@ AST* astCreate(int type, HASH_NODE* symbol,AST* son0, AST* son1, AST* son2, AST*
     newnode->son[1] = son1;
     newnode->son[2] = son2;
     newnode->son[3] = son3;
+    newnode->lineNumber = getLineNumber();
     return newnode;
 }
 

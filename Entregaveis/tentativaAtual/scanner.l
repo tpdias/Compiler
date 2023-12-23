@@ -35,25 +35,25 @@ void initMe();
 "print"      { return KW_PRINT; }
 "return"     { return KW_RETURN; }
 
-[0-9]+       { yylval.symbol = hashInsert(LIT_INT, yytext); return LIT_INT; }
+[0-9]+       { yylval.symbol = hashInsert(SYMBOL_LIT_INT, yytext); return LIT_INT; }
 
 "<="    { return OPERATOR_LE; }
 ">="    { return OPERATOR_GE; }
 "=="    { return OPERATOR_EQ; }
 "!="    { return OPERATOR_DIF; }
 
-[a-zA-Z_0-9]+    { yylval.symbol = hashInsert(TK_IDENTIFIER, yytext); return(TK_IDENTIFIER); }
+[a-zA-Z_0-9]+    { yylval.symbol = hashInsert(SYMBOL_IDENTIFIER, yytext); return(TK_IDENTIFIER); }
 
 "//"+         { BEGIN(SLCOMMENT); }
 "///"        { BEGIN(MLCOMMENT); }
 
-"'"[a-zA-Z0-9]"'"        { yylval.symbol = hashInsert(LIT_CHAR, yytext); return LIT_CHAR; }
+"'"[a-zA-Z0-9]"'"        { yylval.symbol = hashInsert(SYMBOL_LIT_CHAR, yytext); return LIT_CHAR; }
     
-[0-9]+"."[0-9]+           { yylval.symbol = hashInsert(LIT_FLOAT, yytext); return LIT_FLOAT; }
+[0-9]+"."[0-9]+           { yylval.symbol = hashInsert(SYMBOL_LIT_FLOAT, yytext); return LIT_FLOAT; }
 
 [,;()[\]{}=+\-*/%<>&|~] { return yytext[0]; }
 
-\"(\\.|[^\"\n])*\" { yylval.symbol = hashInsert(LIT_STRING, yytext); return LIT_STRING; }
+\"(\\.|[^\"\n])*\" { yylval.symbol = hashInsert(SYMBOL_LIT_STRING, yytext); return LIT_STRING; }
 
 " "
 [\t]

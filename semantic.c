@@ -1,6 +1,7 @@
 //Thiago Parisotto Dias
 #include "semantic.h"
 #include "ast.h"
+#include <stdlib.h>
 
 int semanticErrors = 0;
 
@@ -20,6 +21,16 @@ void check_and_set_declarations(AST *node){
                 semanticErrors += 1;
             }
             else {
+                if(node->son[0]->type == AST_TYPEINT) {
+                    node->symbol->datatype = DATATYPE_INT;
+                } else {
+                    if(node->son[0]->type == AST_TYPEFLOAT) {
+                        node->symbol->datatype = DATATYPE_FLOAT;
+                    }
+                    else{
+                        node->symbol->datatype = DATATYPE_CHAR; 
+                    }
+                }
                 node->symbol->type = SYMBOL_VAR;
             }
             break;
@@ -30,6 +41,16 @@ void check_and_set_declarations(AST *node){
                 semanticErrors += 1;
             }
             else {
+                if(node->son[0]->type == AST_TYPEINT) {
+                    node->symbol->datatype = DATATYPE_INT;
+                } else {
+                    if(node->son[0]->type == AST_TYPEFLOAT) {
+                        node->symbol->datatype = DATATYPE_FLOAT;
+                    }
+                    else{
+                        node->symbol->datatype = DATATYPE_CHAR; 
+                    }
+                }
                 node->symbol->type = SYMBOL_VEC;
             }
             break;
@@ -48,7 +69,7 @@ void check_and_set_declarations(AST *node){
                         node->symbol->datatype = DATATYPE_FLOAT;
                     }
                     else{
-                        node->symbol->datatype = DATATYPE_CHAR; // devo colocar int?
+                        node->symbol->datatype = DATATYPE_CHAR; 
                     }
                 }
             }
@@ -61,12 +82,12 @@ void check_and_set_declarations(AST *node){
     }
 }
 
-void set_node_types(AST *node) {
+void check_and_set_nodes(AST *node) {
     if(node == NULL) {
         return;
     }
     for(int i = 0; i < MAX_SONS; i++) {
-        set_node_types(node->son[i]);
+        check_and_set_nodes(node->son[i]);
     }
     if(node->type == AST_SYMBOL){
         if(node->symbol->type == SYMBOL_VEC || node->symbol->type == SYMBOL_FUN){
@@ -74,7 +95,26 @@ void set_node_types(AST *node) {
             semanticErrors += 1;
         } 
         node->datatype = node->symbol->datatype;
+    } else if(node->type == AST_FUNC || node->type == AST_VEC) {
+        node->datatype = node->symbol->datatype;
+    } else if(node->type == AST_PARENTESES) {
+        node->datatype = node->son[0]->datatype;
+    } else if(isArithmetic(node->type)) {
+        AST *son0 = node->son[0];
+        AST *son1 = node->son[1];
+        if(isCompatible(son0->datatype, son1->datatype)) {
+            node->datatype = son0->datatype;
+        } else {
+            fprintf(stderr, "Semantic ERROR Line %d: Incompatible types\n", node->lineNumber);
+            semanticErrors += 1;
+        }
+    } else if(isRelational(node->type)) {
+        node->datatype = DATATYPE_BOOL;
+    } else if(isLogical(node->type)) {
+        node->datatype = DATATYPE_BOOL;
     }
+
+
 }
 
 void check_usage(AST *node, AST *root) {
@@ -315,4 +355,38 @@ void check_return_compatibility(AST *node, int datatype) {
 
 int get_total_semantic_errors(){
     return semanticErrors;
+}
+
+int isCompatible(int type1, int type2){
+    if(type1 == type2){
+        return 1;
+    }
+    if(type1 == DATATYPE_INT && type2 == DATATYPE_CHAR){
+        return 1;
+    }
+    if(type1 == DATATYPE_CHAR && type2 == DATATYPE_INT){
+        return 1;
+    }
+    return 0;
+}
+
+int isRelational(int type){
+    if(type == AST_LESS || type == AST_GREATER || type == AST_LE || type == AST_GE || type == AST_EQ || type == AST_DIF){
+        return 1;
+    }
+    return 0;
+}
+
+int isArithmetic(int type){
+    if(type == AST_ADD || type == AST_SUB || type == AST_MUL || type == AST_DIV){
+        return 1;
+    }
+    return 0;
+}
+
+int isLogical(int type){
+    if(type == AST_AND || type == AST_OR || type == AST_NOT){
+        return 1;
+    }
+    return 0;
 }

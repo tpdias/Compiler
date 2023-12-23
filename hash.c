@@ -35,8 +35,9 @@ HASH_NODE *hashInsert(int type, char *text) {
     newNode->lineNumber = getLineNumber();
 
     if(newNode->type == SYMBOL_LIT_CHAR) newNode->datatype = DATATYPE_CHAR; 
-    if(newNode->type == SYMBOL_LIT_FLOAT) newNode->datatype = DATATYPE_FLOAT;
-    if(newNode->type == SYMBOL_LIT_INT) newNode->datatype = DATATYPE_INT;
+    else if(newNode->type == SYMBOL_LIT_FLOAT) newNode->datatype = DATATYPE_FLOAT;
+    else if(newNode->type == SYMBOL_LIT_INT) newNode->datatype = DATATYPE_INT;
+
     
     newNode->text = (char*) calloc(strlen(text) + 1, sizeof(char));
     strcpy(newNode->text, text);

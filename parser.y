@@ -74,7 +74,7 @@ struct ast_node* ast;
     program: ldecinit                                                       {
                                                                                 root = $$;
                                                                                 astPrint($1,0);
-                                                                                check_and_set_declarations(root);
+                                                                                check_and_set_declarations(root, root);
                                                                                 check_and_set_nodes(root);
                                                                                 check_undeclared(root);
                                                                                 check_usage(root, root);

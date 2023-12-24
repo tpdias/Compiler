@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void check_and_set_declarations(AST *node);
+void check_and_set_declarations(AST *node, AST *root);
 void check_undeclared(AST *node);
 void check_usage(AST *node, AST *root);
 void check_operands(AST *node);
@@ -20,6 +20,7 @@ int isLogical(int dataType);
 int isRelational(int dataType);
 int isArithmetic(int dataType);
 
+void set_function_implementation(char *text, AST *node);
 void check_function(AST *node, AST *root);
 AST *find_function_declaration(char *text, AST *node);
 int count_params(AST *node);

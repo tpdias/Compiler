@@ -33,7 +33,7 @@ HASH_NODE *hashInsert(int type, char *text) {
     newNode->type = type;
     
     newNode->lineNumber = getLineNumber();
-
+    newNode->isImplemented = 0;
     if(newNode->type == SYMBOL_LIT_CHAR) newNode->datatype = DATATYPE_CHAR; 
     else if(newNode->type == SYMBOL_LIT_FLOAT) newNode->datatype = DATATYPE_FLOAT;
     else if(newNode->type == SYMBOL_LIT_INT) newNode->datatype = DATATYPE_INT;

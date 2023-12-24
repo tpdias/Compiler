@@ -9,7 +9,7 @@ void check_undeclared(AST *node){
     semanticErrors += checkUndeclaredHash();
 }
 
-void check_and_set_declarations(AST *node){
+void check_and_set_declarations(AST *node, AST *root){
     if(node == NULL) {
         return;
     }
@@ -73,12 +73,20 @@ void check_and_set_declarations(AST *node){
                     }
                 }
             }
+            set_function_implementation(node->symbol->text, root);
+            if(node->symbol->isImplemented > 1) {
+                fprintf(stderr, "Semantic ERROR Line %d: Function %s already implemented\n", node->lineNumber, node->symbol->text);
+                semanticErrors += 1;
+            } else if(node->symbol->isImplemented == 0) {
+                fprintf(stderr, "Semantic ERROR Line %d: Function %s not implemented\n", node->lineNumber, node->symbol->text);
+                semanticErrors += 1;
+            }
             break;
         default:
             break;
     }
     for(int i = 0; i < MAX_SONS; i++){
-        check_and_set_declarations(node->son[i]);
+        check_and_set_declarations(node->son[i], root);
     }
 }
 
@@ -148,6 +156,11 @@ void check_usage(AST *node, AST *root) {
 //checa se a funcao ja foi declarada e se o numero de parametros esta correto
 void check_function(AST* node, AST* root) {
     AST* funcDec = find_function_declaration(node->symbol->text, root);
+    fprintf(stderr, "Function %s, %d\n", node->symbol->text, node->symbol->isImplemented);
+    if(node->symbol->isImplemented < 1) {
+        fprintf(stderr, "Semantic ERROR Line %d: Function %s not implemented\n", node->lineNumber, node->symbol->text);
+        semanticErrors += 1;
+    }
     if(funcDec == 0) {
         fprintf(stderr, "Semantic ERROR Line %d: Function %s not declared\n", node->lineNumber, node->symbol->text);
         semanticErrors += 1;
@@ -206,80 +219,41 @@ AST * find_function_declaration(char * text, AST* node) {
     return 0;
 }
 
+void set_function_implementation(char *text, AST *node) {
+    if(node == NULL) {
+        return;
+    }
+    if(node->type == AST_LCODE && strcmp(node->symbol->text, text) == 0) {
+        node->symbol->isImplemented += 1;
+    }
+    for(int i = 0; i < MAX_SONS; i++) {
+        set_function_implementation(text, node->son[i]);
+    }
+}
+
 //checa se os operandos são do mesmo tipo
 void check_operands(AST* node){
     if(node == 0) {
         return;
     }
+    if(isArithmetic(node->type)) {
+        if(node->son[0]->datatype != node->son[1]->datatype){
+            fprintf(stderr, "Semantic ERROR Line %d: Operands of different types\n", node->lineNumber);
+            semanticErrors += 1;
+        }
+    } else if(isLogical(node->type)) {
+        if(node->son[0]->datatype != DATATYPE_BOOL || node->son[1]->datatype != DATATYPE_BOOL){
+            fprintf(stderr, "Semantic ERROR Line %d: Operands of different types\n", node->lineNumber);
+            semanticErrors += 1;
+        }
+    } else if(isRelational(node->type)) {
+        if(node->son[0]->datatype != node->son[1]->datatype){
+            fprintf(stderr, "Semantic ERROR Line %d: Operands of different types\n", node->lineNumber);
+            semanticErrors += 1;
+        }
+    }
+    
     switch(node->type){
-        case AST_ADD:
-            if(node->son[0]->symbol->type != SYMBOL_LIT_INT && node->son[0]->symbol->type != SYMBOL_LIT_CHAR){
-                fprintf(stderr, "Semantic ERROR Line %d: Operand of wrong type ADD\n, node->lineNumber", node->lineNumber);
-                semanticErrors += 1;
-                break;
-            }
-            if(node->son[1]->symbol->type != SYMBOL_LIT_INT && node->son[1]->symbol->type != SYMBOL_LIT_CHAR){
-                fprintf(stderr, "Semantic ERROR Line %d: Operand of wrong type ADD\n", node->lineNumber);
-                semanticErrors += 1;
-            }
-            break;
-        case AST_SUB:
-            if(node->son[0]->symbol->type != SYMBOL_LIT_INT && node->son[0]->symbol->type != SYMBOL_LIT_FLOAT){
-                fprintf(stderr, "Semantic ERROR Line %d: Operand of wrong type SUB\n", node->lineNumber);
-                semanticErrors += 1;
-                break;
-            }
-            if(node->son[1]->symbol->type != SYMBOL_LIT_INT && node->son[1]->symbol->type != SYMBOL_LIT_FLOAT){
-                fprintf(stderr, "Semantic ERROR Line %d: Operand of wrong type SUB\n", node->lineNumber);
-                semanticErrors += 1;
-            }
-            break;
-        case AST_MUL:
-            if(node->son[0]->symbol->type != SYMBOL_LIT_INT && node->son[0]->symbol->type != SYMBOL_LIT_FLOAT){
-                    fprintf(stderr, "Semantic ERROR Line %d: Operand of wrong type MUL\n", node->lineNumber);
-                    semanticErrors += 1;
-                    break;
-                }
-            if(node->son[1]->symbol->type != SYMBOL_LIT_INT && node->son[1]->symbol->type != SYMBOL_LIT_FLOAT){
-                    fprintf(stderr, "Semantic ERROR Line %d: Operand of wrong type MUL\n", node->lineNumber);
-                    semanticErrors += 1;
-                }
-            break;
-        case AST_DIV:
-            if(node->son[0]->symbol->type != SYMBOL_LIT_INT && node->son[0]->symbol->type != SYMBOL_LIT_FLOAT){
-                    fprintf(stderr, "Semantic ERROR Line %d: Operand of wrong type DIV\n", node->lineNumber);
-                    semanticErrors += 1;
-                    break;
-                }
-            if(node->son[1]->symbol->type != SYMBOL_LIT_INT && node->son[1]->symbol->type != SYMBOL_LIT_FLOAT){
-                    fprintf(stderr, "Semantic ERROR Line %d: Operand of wrong type DIV\n", node->lineNumber);
-                    semanticErrors += 1;
-                }
-            break;
-        case AST_LESS:
-        break;
-        case AST_GREATER:
-        break;
-        case AST_LE:
-        break;
-        case AST_GE:
-        break;
-        case AST_EQ:
-        break;
-        case AST_AND:
-        break;
-        case AST_OR:
-            if(node->son[0]->symbol->type != node->son[1]->symbol->type){
-                fprintf(stderr, "Semantic ERROR Line %d: Operands of different types OR\n", node->lineNumber);
-                semanticErrors += 1;
-            }
-            break;
-        case AST_NOT:
-            if(node->son[0]->symbol->type != SYMBOL_LIT_INT){
-                fprintf(stderr, "Semantic ERROR Line %d: Operand of wrong type NOT\n", node->lineNumber);
-                semanticErrors += 1;
-            }
-            break;
         case AST_ATTREXPR:
             if(node->symbol->type != SYMBOL_VAR){
                 fprintf(stderr, "Semantic ERROR Line %d: Assignment to non-variable\n", node->lineNumber);
@@ -306,14 +280,8 @@ void check_operands(AST* node){
                 semanticErrors += 1;
             }
             break;
-        case AST_PRINT:
-            if(node->son[0]->symbol->type != SYMBOL_LIT_INT && node->son[0]->symbol->type != SYMBOL_LIT_STRING){
-                fprintf(stderr, "Semantic ERROR Line %d: Print operand must be an integer, boolean or string\n", node->lineNumber);
-                semanticErrors += 1;
-            }
-            break;
         case AST_IF:
-            if(node->son[0]->symbol->type != SYMBOL_LIT_INT){
+            if(isCompatible(node->son[0]->datatype, DATATYPE_BOOL) == 0){
                 fprintf(stderr, "Semantic ERROR Line %d: If condition must be a boolean\n", node->lineNumber);
                 semanticErrors += 1;
             }

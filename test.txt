@@ -1,6 +1,5 @@
 char a[5] 'c' 0 0 0 0;
-char main();
-code main {
-  a[5] = 6;
-  return a;
-}
+char main(int a, int a);
+int teste();
+
+

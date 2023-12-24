@@ -1503,7 +1503,7 @@ yyreduce:
     {
                                                                                 root = (yyval.ast);
                                                                                 astPrint((yyvsp[(1) - (1)].ast),0);
-                                                                                check_and_set_declarations(root);
+                                                                                check_and_set_declarations(root, root);
                                                                                 check_and_set_nodes(root);
                                                                                 check_undeclared(root);
                                                                                 check_usage(root, root);

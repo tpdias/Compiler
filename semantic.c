@@ -107,18 +107,18 @@ void check_and_set_nodes(AST *node) {
         node->datatype = node->symbol->datatype;
     } else if(node->type == AST_PARENTESES) {
         node->datatype = node->son[0]->datatype;
-    } else if(isArithmetic(node->type)) {
+    } else if(checkIsArithmetic(node->type)) {
         AST *son0 = node->son[0];
         AST *son1 = node->son[1];
-        if(isCompatible(son0->datatype, son1->datatype)) {
+        if(checkIsCompatible(son0->datatype, son1->datatype)) {
             node->datatype = son0->datatype;
         } else {
             fprintf(stderr, "Semantic ERROR Line %d: Incompatible types\n", node->lineNumber);
             semanticErrors += 1;
         }
-    } else if(isRelational(node->type)) {
+    } else if(checkIsRelational(node->type)) {
         node->datatype = DATATYPE_BOOL;
-    } else if(isLogical(node->type)) {
+    } else if(checkIsLogical(node->type)) {
         node->datatype = DATATYPE_BOOL;
     }
 
@@ -236,23 +236,23 @@ void check_operands(AST* node){
     if(node == 0) {
         return;
     }
-    if(isArithmetic(node->type)) {
-        if(node->son[0]->datatype != node->son[1]->datatype){
+    if(checkIsArithmetic(node->type)) {
+        if(checkIsCompatible(node->son[0]->datatype, node->son[1]->datatype) == 0) {
             fprintf(stderr, "Semantic ERROR Line %d: Operands of different types\n", node->lineNumber);
             semanticErrors += 1;
         }
-    } else if(isLogical(node->type)) {
+    } else if(checkIsLogical(node->type)) {
         if(node->son[0]->datatype != DATATYPE_BOOL || node->son[1]->datatype != DATATYPE_BOOL){
             fprintf(stderr, "Semantic ERROR Line %d: Operands of different types\n", node->lineNumber);
             semanticErrors += 1;
         }
-    } else if(isRelational(node->type)) {
-        if(node->son[0]->datatype != node->son[1]->datatype){
+    } else if(checkIsRelational(node->type)) {
+        if(checkIsCompatible(node->son[0]->datatype, node->son[1]->datatype) == 0){
             fprintf(stderr, "Semantic ERROR Line %d: Operands of different types\n", node->lineNumber);
             semanticErrors += 1;
         }
-    }
-    
+    } 
+
     switch(node->type){
         case AST_ATTREXPR:
             if(node->symbol->type != SYMBOL_VAR){
@@ -265,23 +265,19 @@ void check_operands(AST* node){
                 fprintf(stderr, "Semantic ERROR Line %d: Vector index must be an integer\n", node->lineNumber);
                 semanticErrors += 1;
             }
-            if(node->son[1]->symbol->type != SYMBOL_LIT_INT){
-                fprintf(stderr, "Semantic ERROR Line %d: Vector index must be an integer\n", node->lineNumber);
-                semanticErrors += 1;
-            }
-            if(node->son[0]->symbol->type != node->son[1]->symbol->type){
-                fprintf(stderr, "Semantic ERROR Line %d: Operands of different types\n", node->lineNumber);
+            if(node->son[1]->type != SYMBOL_LIT_INT){
+                fprintf(stderr, "Semantic ERROR Line %d: Vector value must be an integer\n", node->lineNumber);
                 semanticErrors += 1;
             }
             break;
         case AST_INPUT:
-            if(node->son[0]->symbol->type != SYMBOL_VAR){
+            if(node->son[0]->type != SYMBOL_VAR){
                 fprintf(stderr, "Semantic ERROR Line %d: Read operand must be a variable\n", node->lineNumber);
                 semanticErrors += 1;
             }
             break;
         case AST_IF:
-            if(isCompatible(node->son[0]->datatype, DATATYPE_BOOL) == 0){
+            if(checkIsCompatible(node->son[0]->datatype, DATATYPE_BOOL) == 0){
                 fprintf(stderr, "Semantic ERROR Line %d: If condition must be a boolean\n", node->lineNumber);
                 semanticErrors += 1;
             }
@@ -325,7 +321,7 @@ int get_total_semantic_errors(){
     return semanticErrors;
 }
 
-int isCompatible(int type1, int type2){
+int checkIsCompatible(int type1, int type2){
     if(type1 == type2){
         return 1;
     }
@@ -338,21 +334,21 @@ int isCompatible(int type1, int type2){
     return 0;
 }
 
-int isRelational(int type){
+int checkIsRelational(int type){
     if(type == AST_LESS || type == AST_GREATER || type == AST_LE || type == AST_GE || type == AST_EQ || type == AST_DIF){
         return 1;
     }
     return 0;
 }
 
-int isArithmetic(int type){
+int checkIsArithmetic(int type){
     if(type == AST_ADD || type == AST_SUB || type == AST_MUL || type == AST_DIV){
         return 1;
     }
     return 0;
 }
 
-int isLogical(int type){
+int checkIsLogical(int type){
     if(type == AST_AND || type == AST_OR || type == AST_NOT){
         return 1;
     }

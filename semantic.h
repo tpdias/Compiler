@@ -15,10 +15,10 @@ void check_misc(AST *node);
 int get_total_semantic_errors();
 void check_and_set_nodes(AST *node);
 
-int isCompatible(int dataType1, int dataType2);
-int isLogical(int dataType);
-int isRelational(int dataType);
-int isArithmetic(int dataType);
+int checkIsCompatible(int dataType1, int dataType2);
+int checkIsLogical(int dataType);
+int checkIsRelational(int dataType);
+int checkIsArithmetic(int dataType);
 
 void set_function_implementation(char *text, AST *node);
 void check_function(AST *node, AST *root);

@@ -1,0 +1,9 @@
+char a[5] 'c' 0 0 0 0;
+char main(int a, int a);
+int teste();
+code main{
+}
+code teste{
+}
+code a{
+}

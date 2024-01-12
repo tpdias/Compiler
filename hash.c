@@ -85,3 +85,17 @@ int checkUndeclaredHash(void) {
     }
     return undeclaredVariables;
 }
+
+HASH_NODE *makeTemp(void) {
+    static int serialNumber = 0;
+    static char buffer[256];
+    sprintf(buffer, "__temp%d", serialNumber++);
+    return hashInsert(SYMBOL_IDENTIFIER, buffer);
+}
+
+HASH_NODE *makeLabel(void) {
+    static int serialNumber = 0;
+    static char buffer[256];
+    sprintf(buffer, "__label%d", serialNumber++);
+    return hashInsert(SYMBOL_IDENTIFIER, buffer);
+}

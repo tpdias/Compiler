@@ -69,7 +69,7 @@ void check_and_set_declarations(AST *node, AST *root){
                         node->symbol->datatype = DATATYPE_FLOAT;
                     }
                     else{
-                        node->symbol->datatype = DATATYPE_CHAR; 
+                        node->symbol->datatype = DATATYPE_CHAR;
                     }
                 }
             }
@@ -82,6 +82,26 @@ void check_and_set_declarations(AST *node, AST *root){
                 semanticErrors += 1;
             }
             break;
+            case AST_PARAM:
+            //check if it's arleady declared
+            if(node->symbol->type != SYMBOL_IDENTIFIER){
+                fprintf(stderr, "Semantic ERROR Line %d: Parameter %s already declared\n", node->lineNumber, node->symbol->text);
+                semanticErrors += 1;
+            }
+            else {
+                node->symbol->type = SYMBOL_PARAM;
+                if(node->son[0]->type == AST_TYPEINT) {
+                    node->symbol->datatype = DATATYPE_INT;
+                } else {
+                    if(node->son[0]->type == AST_TYPEFLOAT) {
+                        node->symbol->datatype = DATATYPE_FLOAT;
+                    }
+                    else{
+                        node->symbol->datatype = DATATYPE_CHAR; 
+                    }
+                }
+                node->symbol->type = SYMBOL_VAR;
+            }
         default:
             break;
     }

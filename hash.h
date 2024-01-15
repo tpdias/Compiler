@@ -18,6 +18,7 @@
 #define SYMBOL_VAR 6
 #define SYMBOL_VEC 7
 #define SYMBOL_FUN 8
+#define SYMBOL_PARAM 9
 
 #define DATATYPE_INT 10
 #define DATATYPE_FLOAT 11

@@ -1,5 +1,10 @@
 #include "tacs.h"
 
+
+//prototype
+TAC* make_binop(int type, TAC* code0, TAC* code1);
+
+
 char *opcodeNames[] = { "TAC_SYMBOL", 
     "TAC_MOVE", "TAC_ADD", "TAC_SUB", "TAC_MUL",
     "TAC_DIV", "TAC_LABEL", "TAC_BEGINFUN", "TAC_ENDFUN",
@@ -49,9 +54,11 @@ TAC *tacJoin(TAC *l1, TAC *l2) {
     return l2;
 }
 
+
+
 TAC *codegen(AST *node) {
     TAC *code[MAX_SONS];
-    if(!node) return;
+    if(!node) return 0;
 
     for(int i=0; i<MAX_SONS; i++) {
         code[i] = codegen(node->son[i]);
@@ -100,9 +107,6 @@ TAC *codegen(AST *node) {
     }
     return tacJoin(tacJoin(tacJoin(code[0], code[1]), code[2]), code[3]);
 }
-
-//prototype
-TAC* make_binop(int type, TAC* code0, TAC* code1);
 
 
 //implementation

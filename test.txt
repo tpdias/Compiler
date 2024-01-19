@@ -1,8 +1,11 @@
 char a[5] 'c' 0 0 0 0;
-char main(int a, int a);
+int d = 0;
+int e = 2;
+char main(int b, int c);
 int teste();
 code main {
-
+    d = d + e;
+    e = 4 + 12 - 1 / 2;
 }
 code teste{
     

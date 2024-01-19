@@ -270,13 +270,13 @@ void check_operands(AST* node){
         return;
     }
     if(checkIsArithmetic(node->type)) {
-        if(checkIsCompatible(node->son[0]->datatype, node->son[1]->datatype) == 1) {
-            fprintf(stderr, "Semantic ERROR Line %d: Operands of different types\n", node->lineNumber);
+        if(checkIsCompatible(node->son[0]->datatype, node->son[1]->datatype) == 0) {
+            fprintf(stderr, "Semantic ERROR Line %d: Operands of different types1\n", node->lineNumber);
             semanticErrors += 1;
         }
     } else if(checkIsLogical(node->type)) {
         if(node->son[0]->datatype != DATATYPE_BOOL || node->son[1]->datatype != DATATYPE_BOOL){
-            fprintf(stderr, "Semantic ERROR Line %d: Operands of different types\n", node->lineNumber);
+            fprintf(stderr, "Semantic ERROR Line %d: Operands of different types2\n", node->lineNumber);
             semanticErrors += 1;
         }
     } else if(checkIsRelational(node->type)) {

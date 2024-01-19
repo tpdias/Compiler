@@ -83,7 +83,7 @@ struct ast_node* ast;
                                                                                 check_operands(root);
                                                                                 check_misc(root);
                                                                                 check_semantic(get_total_semantic_errors());
-                                                                                genTACs(root);
+                                                                                tacPrintBack(genTACs(root));                                                        
                                                                                 }
     ;
 

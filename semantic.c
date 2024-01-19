@@ -102,6 +102,20 @@ void check_and_set_declarations(AST *node, AST *root){
                 }
                 node->symbol->type = SYMBOL_VAR;
             }
+            break;
+        case AST_INPUT:
+            fprintf(stderr, "input %d\n", node->son[0]->type);
+            if(node->son[0]->type == AST_TYPEINT) {
+                node->datatype = DATATYPE_INT;
+            } else {
+                if(node->son[0]->type == AST_TYPEFLOAT) {
+                    node->datatype = DATATYPE_FLOAT;
+                }
+                else{
+                    node->datatype = DATATYPE_CHAR; 
+                }
+            }
+            break;
         default:
             break;
     }
@@ -205,7 +219,7 @@ void compare_arguments (AST* funcCall, AST* declaration) {
         return;
     }
     if(declaration->son[0]->symbol->datatype != funcCall->son[0]->symbol->datatype) {
-        fprintf(stderr, "Semantic ERROR Line %d: Function called with wrong type of parameters 2\n", declaration->lineNumber);
+        fprintf(stderr, "Semantic ERROR Line %d: Function called with wrong type of parameters\n", declaration->lineNumber);
         semanticErrors += 1;
         return;
     }
@@ -274,24 +288,31 @@ void check_operands(AST* node){
 
     switch(node->type){
         case AST_ATTREXPR:
-            //WARNING: é aqui
-            //check if the variable datatype is compatible with the atribuition
-            if(checkIsCompatible(node->symbol->datatype, node->son[0]->symbol->datatype) == 0){
-                fprintf(stderr, "Semantic ERROR Line %d: Incompatible types\n", node->lineNumber);
-                semanticErrors += 1;
-            }
             if(node->symbol->type != SYMBOL_VAR){
                 fprintf(stderr, "Semantic ERROR Line %d: Assignment to non-variable\n", node->lineNumber);
                 semanticErrors += 1;
             }
+            if(node->son[0]->type == AST_INPUT){
+                if(node->symbol->datatype != node->son[0]->datatype){
+                    fprintf(stderr, "Semantic ERROR Line %d: Assignment of different types\n", node->lineNumber);
+                    semanticErrors += 1;
+                }
+            } else {
+                if(node->son[0]->datatype != node->symbol->datatype){
+                    fprintf(stderr, "Semantic ERROR Line %d: Assignment of different types\n", node->lineNumber);
+                    semanticErrors += 1;
+                }
+            }
             break;
         case AST_ATTRVEC:
-            if(node->son[0]->symbol->type != SYMBOL_LIT_INT){
+            if(node->son[0]->symbol->datatype != DATATYPE_INT){
+                fprintf(stderr, "%d, datatype\n", node->son[0]->symbol->datatype);
                 fprintf(stderr, "Semantic ERROR Line %d: Vector index must be an integer\n", node->lineNumber);
                 semanticErrors += 1;
             }
-            if(node->son[1]->type != SYMBOL_VEC){
-                fprintf(stderr, "Semantic ERROR Line %d: Vector value must be a vector\n", node->lineNumber);
+            if(node->son[1]->datatype != node->symbol->datatype){
+                fprintf(stderr, "type: %d\n", node->son[1]->datatype);
+                fprintf(stderr, "Semantic ERROR Line %d: Vector value wrong type\n", node->lineNumber);
                 semanticErrors += 1;
             }
             break;

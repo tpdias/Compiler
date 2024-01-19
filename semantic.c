@@ -270,7 +270,7 @@ void check_operands(AST* node){
         return;
     }
     if(checkIsArithmetic(node->type)) {
-        if(checkIsCompatible(node->son[0]->datatype, node->son[1]->datatype) == 1) {
+        if(checkIsCompatible(node->son[0]->datatype, node->son[1]->datatype) == 0) {
             fprintf(stderr, "Semantic ERROR Line %d: Operands of different types\n", node->lineNumber);
             semanticErrors += 1;
         }

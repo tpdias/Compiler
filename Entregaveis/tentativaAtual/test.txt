@@ -1,13 +1,9 @@
-char a[5] 'c' 0 0 0 0;
-int j = 5;
-char main(int b, int c);
-int teste();
+int a = 0;
+int v[2] 0 0;
+
+int main(int j, int c, char d, float x);
 code main {
-
+    a = input(int);
+    a = main(1, 2, 's', 0.2);
+    v[2] = v[2];
 }
-code teste{
-    
-}
-code a{
-}
-

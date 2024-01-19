@@ -196,21 +196,23 @@ void check_function(AST* node, AST* root) {
 }
 
 //comparar parametros
-void compare_arguments (AST* node1, AST* node2) {
-    if(node1 == 0 && node2 == 0) {
+void compare_arguments (AST* funcCall, AST* declaration) {
+    if(declaration == 0 && funcCall == 0) {
         return;
     }
-    if(node1 == 0 || node2 == 0) {
-        fprintf(stderr, "Semantic ERROR Line %d: Function called with wrong type of parameters\n", node1->lineNumber);
+    if(declaration == 0 || funcCall == 0) {
+        fprintf(stderr, "Semantic ERROR Line %d: Function called with wrong type of parameters\n", declaration->lineNumber);
         semanticErrors += 1;
         return;
     }
-    if(node1->son[0]->symbol->type != node2->son[0]->symbol->type) {
-        fprintf(stderr, "Semantic ERROR Line %d: Function called with wrong type of parameters\n", node1->lineNumber);
+    printf("declaration %d\n", declaration->son[0]->symbol->datatype);
+    printf("funcCall %d\n", funcCall->son[0]->symbol->datatype);
+    if(declaration->son[0]->symbol->datatype != funcCall->son[0]->symbol->datatype) {
+        fprintf(stderr, "Semantic ERROR Line %d: Function called with wrong type of parameters 2\n", declaration->lineNumber);
         semanticErrors += 1;
         return;
     }
-    compare_arguments(node1->son[1], node2->son[1]);
+    compare_arguments(declaration->son[1], funcCall->son[1]);
 }
 
 //checar o numero de parametros
@@ -285,14 +287,14 @@ void check_operands(AST* node){
                 fprintf(stderr, "Semantic ERROR Line %d: Vector index must be an integer\n", node->lineNumber);
                 semanticErrors += 1;
             }
-            if(node->son[1]->type != SYMBOL_LIT_INT){
-                fprintf(stderr, "Semantic ERROR Line %d: Vector value must be an integer\n", node->lineNumber);
+            if(node->son[1]->type != SYMBOL_VEC){
+                fprintf(stderr, "Semantic ERROR Line %d: Vector value must be a vector\n", node->lineNumber);
                 semanticErrors += 1;
             }
             break;
         case AST_INPUT:
-            if(node->son[0]->type != SYMBOL_VAR){
-                fprintf(stderr, "Semantic ERROR Line %d: Read operand must be a variable\n", node->lineNumber);
+            if(node->son[0]->type != AST_TYPEFLOAT && node->son[0]->type != AST_TYPECHAR && node->son[0]->type != AST_TYPEINT){
+                fprintf(stderr, "Semantic ERROR Line %d: Input parameter must be a type (char, int or float)\n", node->lineNumber);
                 semanticErrors += 1;
             }
             break;

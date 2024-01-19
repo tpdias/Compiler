@@ -38,7 +38,6 @@ int main(int argc, char **argv) {
 
     fprintf(stderr, "Uncompiling done!\n");
 
-    hashPrint();
     
     printf("Sucesso!\n");
 

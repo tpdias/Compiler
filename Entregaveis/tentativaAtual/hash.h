@@ -42,6 +42,8 @@ HASH_NODE *hashInsert(int type, char *text);
 void hashPrint(void);
 HASH_NODE *hashFind(char *text);
 int checkUndeclaredHash(void);
+HASH_NODE *makeTemp(void);
+HASH_NODE *makeLabel(void);
 
 #endif
 //END

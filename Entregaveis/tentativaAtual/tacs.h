@@ -9,8 +9,7 @@ enum OPCODES { TAC_SYMBOL,
     TAC_IFZ, TAC_JUMP, TAC_CALL, TAC_ARG, 
     TAC_RET, TAC_PRINT, TAC_READ, TAC_LESS,
     TAC_GREATER, TAC_LE, TAC_GE, TAC_EQ, TAC_DIF,
-    TAC_AND, TAC_OR, TAC_NOT, TAC_ATTRVEC,
-    TAC_INPUT, TAC_RETURN
+    TAC_AND, TAC_OR, TAC_NOT, TAC_ATTRVEC, TAC_INPUT
 };
 
 typedef struct tac_node
@@ -25,8 +24,7 @@ typedef struct tac_node
 
 TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2);
 void tacPrintSingle(TAC *tac);
-TAC* revertTac(TAC* tac);
-void tacPrintForward(TAC *tac);
+void tacPrintBack(TAC *tac);
 TAC* codegen(AST *node);
 TAC *tacJoin(TAC *l1, TAC *l2);
 

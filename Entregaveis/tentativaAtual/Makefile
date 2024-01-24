@@ -7,11 +7,15 @@
 # and #include "main.c" in the last part of the scanner.l
 #
 
-etapa4: hash.o ast.o y.tab.o lex.yy.o semantic.o
-	gcc -Wall -o etapa4 hash.o ast.o y.tab.o lex.yy.o semantic.o
+etapa5: hash.o ast.o y.tab.o lex.yy.o semantic.o tac.o
+	gcc -Wall -o etapa5 hash.o ast.o y.tab.o lex.yy.o semantic.o tacs.o
+
+
+tac.o: tacs.c
+	gcc -Wall -c tacs.c
 
 semantic.o: semantic.c
-	gcc -c semantic.c
+	gcc -Wall -c semantic.c
 
 hash.o: hash.c
 	gcc -c hash.c
@@ -32,4 +36,4 @@ lex.yy.c: scanner.l
 	flex --header-file=lex.yy.h scanner.l
 
 clean:
-	rm -f *.o etapa4 lex.yy.c lex.yy.h y.tab.c y.tab.h y.output
+	rm -f *.o etapa5 lex.yy.c lex.yy.h y.tab.c y.tab.h y.output

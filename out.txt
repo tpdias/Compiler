@@ -1,0 +1,11 @@
+int d = 0;
+int e = 2;
+int main();
+code main{
+e = 2;
+while (d == 5)
+{
+print ('a');
+}
+e = 2;
+}

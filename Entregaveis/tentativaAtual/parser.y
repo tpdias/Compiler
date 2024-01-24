@@ -5,12 +5,14 @@
 #include "ast.h"
 #include "hash.h"
 #include "semantic.h"
-
+#include "tacs.h"
 int yylex();
 int yyerror(char* err);
 extern int getLineNumber();
+extern TAC* codegen(AST *node);
 void check_semantic(int semantic_errors);
 AST *root;
+TAC *genTACs(AST* node);
 %}
 
 %union
@@ -81,6 +83,7 @@ struct ast_node* ast;
                                                                                 check_operands(root);
                                                                                 check_misc(root);
                                                                                 check_semantic(get_total_semantic_errors());
+                                                                                tacPrintBack(genTACs(root));                                                        
                                                                                 }
     ;
 
@@ -192,4 +195,8 @@ void check_semantic(int semantic_errors) {
 int yyerror(char* err) {
     fprintf(stderr, "Erro na linha %d\n", getLineNumber());
     exit(3);
+}
+
+TAC *genTACs(AST* node) {
+    return codegen(node);
 }

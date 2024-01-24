@@ -1,5 +1,5 @@
-tar cvzf etapa4.tgz .
+tar cvzf etapa5.tgz .
 sftp -oHostKeyAlgorithms=+ssh-rsa tpdias@html.inf.ufrgs.br
 cd public_html
 cd tjyxkhahnxbcsouc
-put etapa4.tgz
+put etapa5.tgz

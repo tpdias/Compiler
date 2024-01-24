@@ -81,7 +81,6 @@ int checkUndeclaredHash(void) {
                 fprintf(stderr, "Semantic ERROR Line %d: Undeclared identifier %s\n", node->lineNumber, node->text);
                 undeclaredVariables++;
             }
-            fprintf(stderr, "Table[%d] has %s, type: %d, dataType: %d\n", i, node->text, node->type, node->datatype);
         }
     }
     return undeclaredVariables;

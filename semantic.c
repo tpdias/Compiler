@@ -104,7 +104,6 @@ void check_and_set_declarations(AST *node, AST *root){
             }
             break;
         case AST_INPUT:
-            fprintf(stderr, "input %d\n", node->son[0]->type);
             if(node->son[0]->type == AST_TYPEINT) {
                 node->datatype = DATATYPE_INT;
             } else {
@@ -271,12 +270,12 @@ void check_operands(AST* node){
     }
     if(checkIsArithmetic(node->type)) {
         if(checkIsCompatible(node->son[0]->datatype, node->son[1]->datatype) == 0) {
-            fprintf(stderr, "Semantic ERROR Line %d: Operands of different types1\n", node->lineNumber);
+            fprintf(stderr, "Semantic ERROR Line %d: Operands of different types\n", node->lineNumber);
             semanticErrors += 1;
         }
     } else if(checkIsLogical(node->type)) {
         if(node->son[0]->datatype != DATATYPE_BOOL || node->son[1]->datatype != DATATYPE_BOOL){
-            fprintf(stderr, "Semantic ERROR Line %d: Operands of different types2\n", node->lineNumber);
+            fprintf(stderr, "Semantic ERROR Line %d: Operands of different types\n", node->lineNumber);
             semanticErrors += 1;
         }
     } else if(checkIsRelational(node->type)) {

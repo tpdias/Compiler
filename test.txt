@@ -1,10 +1,14 @@
 int d = 0;
 int e = 2;
 int main();
+int s(int x);
 code main {
-    e = 2;
+    e = s;
     while(d == 5) {
         print('a');
     }
-    e = 2;
+    e = main();
+}
+code s {
+    e = 5;
 }

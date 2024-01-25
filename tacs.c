@@ -5,6 +5,7 @@
 TAC* make_binop(int type, TAC* code0, TAC* code1);
 TAC* make_if(TAC* code0, TAC* code1, TAC* code2);
 TAC* make_while(TAC* code0, TAC* code1);
+TAC* make_func(TAC* code0, TAC* params, TAC* symbol);
 
 char *opcodeNames[] = { "TAC_SYMBOL", 
     "TAC_MOVE", "TAC_ADD", "TAC_SUB", "TAC_MUL",
@@ -13,7 +14,7 @@ char *opcodeNames[] = { "TAC_SYMBOL",
     "TAC_RET", "TAC_PRINT", "TAC_READ", "TAC_LESS",
     "TAC_GREATER", "TAC_LE", "TAC_GE", "TAC_EQ", "TAC_DIF",
     "TAC_AND", "TAC_OR", "TAC_NOT", "TAC_ATTRVEC", 
-    "TAC_INPUT", "TAC_RETURN"
+    "TAC_INPUT", "TAC_RETURN", "TAC_VEC", "TAC_PARAM"
     };
 
 TAC * tacCreate(int opcode, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2) {
@@ -41,10 +42,10 @@ void tacPrintSingle(TAC * tac) {
     fprintf(stderr, ")\n");
 }
 
-void tacPrintForward(TAC *tac) {
+void tacPrint(TAC *tac) {
     if (!tac) return;
     tacPrintSingle(tac);
-    tacPrintForward(tac->next);
+    tacPrint(tac->next);
 }
 
 TAC* revertTac(TAC* tac) {
@@ -103,10 +104,11 @@ TAC *codegen(AST *node) {
     case AST_IF: return make_if(code[0], code[1], code[2]); break;
     case AST_ELSE: return make_if(code[0], code[1], code[2]); break;
     case AST_WHILE: return make_while(code[0], code[1]); break;
-    case AST_PARAM: break;
-    case AST_FUNC: break;
-    case AST_ARGLST: break;
-    case AST_DECFUNC: break;
+    case AST_PARAM: return tacJoin(tacCreate(TAC_PARAM, node->symbol, 0, 0), code[1]); break;
+    case AST_FUNC: return tacJoin(code[0], tacCreate(TAC_CALL, makeTemp(), node->symbol, 0)); break;
+    case AST_ARGLST: return tacJoin(code[1], tacJoin(code[0], tacCreate(TAC_ARG, code[0]?code[0]->res:0, 0, 0))); break;
+    case AST_DECFUNC: return make_func(code[2], code[1], tacCreate(TAC_SYMBOL, node->symbol, 0, 0)); break;
+    case AST_VEC: return tacJoin(code[0], tacCreate(TAC_VEC, makeTemp(), node->symbol, 0)); break;
     default: //fprintf(stderr, "ERROR: Unknown node type: %d\n", node->type);
         break;
     }
@@ -138,6 +140,13 @@ TAC* make_if(TAC* code0, TAC* code1, TAC* code2) {
 }
 
 TAC* make_while(TAC* code0, TAC* code1) {
+    /*  TAC LABEL
+        TAC IFZ
+        TAC CODE0
+        TAC JUMP
+        TAC LABEL
+        TAC CODE1
+    */
     TAC* newTac;
     HASH_NODE* newLabelLoop = makeLabel();
     HASH_NODE* newLabelJump = makeLabel();
@@ -146,5 +155,16 @@ TAC* make_while(TAC* code0, TAC* code1) {
     TAC* jumpTac = tacCreate(TAC_JUMP, newLabelLoop, 0, 0);
     TAC* labelTacJump = tacCreate(TAC_LABEL, newLabelJump, 0, 0);
     newTac = tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(labelTacLoop, code0), whileTac), code1), jumpTac), labelTacJump);
+    return newTac;
+}
+
+TAC* make_func(TAC* code0, TAC* params, TAC* symbol) {
+    /*  TAC BEGINFUN
+        TAC PARAM
+        TAC CODE0
+        TAC ENDFUN
+    */
+    TAC* newTac;
+    newTac = tacJoin(tacJoin(tacJoin(tacCreate(TAC_BEGINFUN, symbol->res, 0, 0), params), code0), tacCreate(TAC_ENDFUN, symbol->res, 0, 0));
     return newTac;
 }

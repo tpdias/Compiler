@@ -131,10 +131,10 @@ void check_and_set_nodes(AST *node) {
         check_and_set_nodes(node->son[i]);
     }
     if(node->type == AST_SYMBOL){
-        if(node->symbol->type == SYMBOL_VEC || node->symbol->type == SYMBOL_FUN){
-            fprintf(stderr, "Semantic ERROR Line %d: %s is not a scalar\n", node->lineNumber, node->symbol->text);
-            semanticErrors += 1;
-        } 
+        // if(node->symbol->type == SYMBOL_VEC || node->symbol->type == SYMBOL_FUN){
+        //     fprintf(stderr, "Semantic ERROR Line %d: %s is not a scalar\n", node->lineNumber, node->symbol->text);
+        //     semanticErrors += 1;
+        // } 
         node->datatype = node->symbol->datatype;
     } else if(node->type == AST_FUNC || node->type == AST_VEC) {
         node->datatype = node->symbol->datatype;

@@ -83,7 +83,7 @@ struct ast_node* ast;
                                                                                 check_operands(root);
                                                                                 check_misc(root);
                                                                                 check_semantic(get_total_semantic_errors());
-                                                                                tacPrintBack(genTACs(root));                                                        
+                                                                                tacPrint(genTACs(root));                                                        
                                                                                 }
     ;
 
@@ -198,5 +198,5 @@ int yyerror(char* err) {
 }
 
 TAC *genTACs(AST* node) {
-    return codegen(node);
+    return revertTac(codegen(node));
 }

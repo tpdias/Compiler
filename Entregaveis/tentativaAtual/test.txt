@@ -1,9 +1,14 @@
-char a[5] 'c' 0 0 0 0;
 int d = 0;
 int e = 2;
-char main(int b, int c);
+int main();
+int s(int x);
 code main {
-    d = d + e;
-    e = 4 + 12 - 1 / 2;
-    d = input(int);
+    e = s;
+    while(d == 5) {
+        print('a');
+    }
+    e = main();
+}
+code s {
+    e = 5;
 }

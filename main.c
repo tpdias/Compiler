@@ -2,13 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ast.h"
+#include "asm.h"
 extern FILE* yyin;
-extern int isRunning();
-extern int getLineNumber();
 extern int yyparse();
 extern void initMe();
-extern void hashPrint();
 extern AST* getRoot();
+extern TAC* getTAC();
+extern void generateASM(TAC* tac, AST* ast);
 
 int main(int argc, char **argv) {
     FILE* output;
@@ -38,10 +38,11 @@ int main(int argc, char **argv) {
 
     fprintf(stderr, "Uncompiling done!\n");
 
+    generateASM(getTAC(), getRoot());
     
     printf("Sucesso!\n");
-
-
+    fclose(output);
+    fclose(yyin);
     exit(0);
 }
 

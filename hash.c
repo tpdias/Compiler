@@ -34,7 +34,7 @@ HASH_NODE *hashInsert(int type, char *text) {
     
     newNode->lineNumber = getLineNumber();
     newNode->isImplemented = 0;
-    if(newNode->type == SYMBOL_LIT_CHAR) newNode->datatype = DATATYPE_CHAR; 
+    if(newNode->type == SYMBOL_LIT_CHAR) newNode->datatype = DATATYPE_CHAR;
     else if(newNode->type == SYMBOL_LIT_FLOAT) newNode->datatype = DATATYPE_FLOAT;
     else if(newNode->type == SYMBOL_LIT_INT) newNode->datatype = DATATYPE_INT;
 
@@ -98,4 +98,8 @@ HASH_NODE *makeLabel(void) {
     static char buffer[256];
     sprintf(buffer, "__label%d", serialNumber++);
     return hashInsert(SYMBOL_IDENTIFIER, buffer);
+}
+
+HASH_NODE** getTable(void) {
+    return Table;
 }

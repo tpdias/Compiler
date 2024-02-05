@@ -6,12 +6,15 @@
 #include "hash.h"
 #include "semantic.h"
 #include "tacs.h"
+#include "asm.h"
+
 int yylex();
 int yyerror(char* err);
 extern int getLineNumber();
 extern TAC* codegen(AST *node);
 void check_semantic(int semantic_errors);
-AST *root;
+AST *astRoot;
+TAC *tacRoot;
 TAC *genTACs(AST* node);
 %}
 
@@ -74,16 +77,16 @@ struct ast_node* ast;
 
 %%
     program: ldecinit                                                       {
-                                                                                root = $$;
-                                                                                astPrint($1,0);
-                                                                               // check_and_set_declarations(root, root);
-                                                                               // check_and_set_nodes(root);
-                                                                               // check_undeclared(root);
-                                                                               // check_usage(root, root);
-                                                                               // check_operands(root);
-                                                                               // check_misc(root);
+                                                                                astRoot = $$;
+                                                                               // check_and_set_declarations(astRoot, astRoot);
+                                                                               // check_and_set_nodes(astRoot);
+                                                                               // check_undeclared(astRoot);
+                                                                               // check_usage(astRoot, astRoot);
+                                                                               // check_operands(astRoot);
+                                                                               // check_misc(astRoot);
                                                                                // check_semantic(get_total_semantic_errors());
-                                                                                tacPrint(genTACs(root));                                                        
+                                                                                tacRoot = genTACs(astRoot);
+                                                                                tacPrint(tacRoot);
                                                                                 }
     ;
 
@@ -182,9 +185,11 @@ struct ast_node* ast;
 %%
     
 AST *getRoot() {
-    return root;
+    return astRoot;
 }
-
+TAC *getTAC() {
+    return tacRoot;
+}
 void check_semantic(int semantic_errors) {
     if(semantic_errors > 0) {
         fprintf(stderr, "%d, Semantic Errors.\n", semantic_errors);

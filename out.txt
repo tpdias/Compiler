@@ -1,15 +1,9 @@
-int d = 0;
-int e = 2;
+int c = 5;
+char a = 's';
+char x = 'x';
 int main();
-int s(int x);
 code main{
-e = s;
-while (d == 5)
-{
-print ('a');
-}
-e = main();
-}
-code s{
-e = 5;
+c = 1 + 5;
+c = a + c;
+c = 5;
 }

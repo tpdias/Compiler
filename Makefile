@@ -38,4 +38,15 @@ lex.yy.c: scanner.l
 	flex --header-file=lex.yy.h scanner.l
 
 clean:
-	rm -f *.o etapa5 lex.yy.c lex.yy.h y.tab.c y.tab.h y.output
+	rm -f *.o etapa6 lex.yy.c lex.yy.h y.tab.c y.tab.h y.output compiler out.txt asm.s asm.o
+
+test: 
+	./etapa6 test.txt out.txt
+	clang -c -o asm.o asm.s
+	clang -o compiler asm.o
+	./compiler
+
+fulltest:
+	make clean
+	make
+	make test

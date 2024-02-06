@@ -44,6 +44,7 @@ HASH_NODE *hashFind(char *text);
 int checkUndeclaredHash(void);
 HASH_NODE *makeTemp(void);
 HASH_NODE *makeLabel(void);
+HASH_NODE **getTable(void);
 
 #endif
 //END

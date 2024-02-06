@@ -14,7 +14,8 @@ char *opcodeNames[] = { "TAC_SYMBOL",
     "TAC_RET", "TAC_PRINT", "TAC_READ", "TAC_LESS",
     "TAC_GREATER", "TAC_LE", "TAC_GE", "TAC_EQ", "TAC_DIF",
     "TAC_AND", "TAC_OR", "TAC_NOT", "TAC_ATTRVEC", 
-    "TAC_INPUT", "TAC_RETURN", "TAC_VEC", "TAC_PARAM"
+    "TAC_INPUT", "TAC_RETURN", "TAC_VEC", "TAC_PARAM",
+    "TAC_PRINTCHAR"
     };
 
 TAC * tacCreate(int opcode, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2) {
@@ -97,8 +98,13 @@ TAC *codegen(AST *node) {
     //commands
     case AST_ATTREXPR: return tacJoin(code[0], tacCreate(TAC_MOVE, node->symbol, code[0]?code[0]->res:0, 0)); break;
     case AST_ATTRVEC: return tacJoin(code[0], tacJoin(code[1], tacCreate(TAC_ATTRVEC, node->symbol, code[0]?code[0]->res:0, code[1]?code[1]->res:0))); break;
-    case AST_INPUT: return tacJoin(code[0], tacCreate(TAC_INPUT, 0, 0, 0)); break; // como fazer isso passar o valor lido para o simbolo?
-    case AST_PRINT: return tacJoin(tacJoin(code[0], tacCreate(TAC_PRINT, code[0]?code[0]->res:0, 0, 0)), code[1]); break;
+    case AST_INPUT: return tacJoin(code[0], tacCreate(TAC_INPUT, makeTemp(), 0, 0)); break; 
+    case AST_PRINT: 
+            if(node->son[0]->type == AST_TYPECHAR){
+                return tacJoin(tacJoin(code[0], tacCreate(TAC_PRINTCHAR, code[0]?code[0]->res:0, 0, 0)), code[1]); break;
+            }
+            return tacJoin(tacJoin(code[0], tacCreate(TAC_PRINT, code[0]?code[0]->res:0, 0, 0)), code[1]);
+        break;
     case AST_PRINTEXP: return tacJoin(tacJoin(code[0], tacCreate(TAC_PRINT, code[0]?code[0]->res:0, 0, 0)), code[1]); break;
     case AST_RETURN: return tacJoin(code[0], tacCreate(TAC_RETURN, code[0]?code[0]->res:0, 0, 0)); break;
     case AST_IF: return make_if(code[0], code[1], code[2]); break;
@@ -107,7 +113,7 @@ TAC *codegen(AST *node) {
     case AST_PARAM: return tacJoin(tacCreate(TAC_PARAM, node->symbol, 0, 0), code[1]); break;
     case AST_FUNC: return tacJoin(code[0], tacCreate(TAC_CALL, makeTemp(), node->symbol, 0)); break;
     case AST_ARGLST: return tacJoin(code[1], tacJoin(code[0], tacCreate(TAC_ARG, code[0]?code[0]->res:0, 0, 0))); break;
-    case AST_DECFUNC: return make_func(code[2], code[1], tacCreate(TAC_SYMBOL, node->symbol, 0, 0)); break;
+    case AST_DECFUNC: return make_func(tacCreate(TAC_SYMBOL, node->symbol, 0, 0), code[1], code[2]); break;
     case AST_VEC: return tacJoin(code[0], tacCreate(TAC_VEC, makeTemp(), node->symbol, 0)); break;
     default: //fprintf(stderr, "ERROR: Unknown node type: %d\n", node->type);
         break;
@@ -158,7 +164,7 @@ TAC* make_while(TAC* code0, TAC* code1) {
     return newTac;
 }
 
-TAC* make_func(TAC* code0, TAC* params, TAC* symbol) {
+TAC* make_func(TAC* symbol, TAC* params, TAC* code0) {
     /*  TAC BEGINFUN
         TAC PARAM
         TAC CODE0

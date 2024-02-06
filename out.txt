@@ -1,9 +1,0 @@
-int c = 5;
-char a = 's';
-char x = 'x';
-int main();
-code main{
-c = 1 + 5;
-c = a + c;
-c = 5;
-}

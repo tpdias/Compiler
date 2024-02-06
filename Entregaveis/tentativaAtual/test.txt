@@ -1,14 +1,9 @@
-int d = 0;
-int e = 2;
+int a = 5;
+int b = 2;
+
 int main();
-int s(int x);
 code main {
-    e = s;
-    while(d == 5) {
-        print('a');
-    }
-    e = main();
-}
-code s {
-    e = 5;
+    a = a + b;
+    print(a);
+    return 0;
 }

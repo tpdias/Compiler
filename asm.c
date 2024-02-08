@@ -5,7 +5,7 @@
 void allocateTemp(FILE* output, HASH_NODE* node) {
     fprintf(output, 
                     "\t.globl _%s\n"
-                    "\t	.p2align	2, 0x0\n"
+                    "\t	.p2align	2\n"
                     "_%s:\n"
                     "\t.long 0\n\n", 
                     node->text, node->text);
@@ -20,7 +20,7 @@ void allocateImediate(FILE* output, HASH_NODE* node) {
         }
         else {
             fprintf(output, "\t.globl _%s\n"
-                            "\t	.p2align	2, 0x0\n"
+                            "\t	.p2align	2\n"
                             "_%s:\n"
                             "\t.long %s\n\n", 
                             node->text, node->text, node->text); 
@@ -43,6 +43,9 @@ void allocateGlobalVariables(FILE* output, HASH_NODE** table) {
     }
 }
 
+
+
+
 void allocateAST(FILE* output, AST* node) {
     if(node == 0){
         return;
@@ -58,18 +61,14 @@ void allocateAST(FILE* output, AST* node) {
         }
         else {
             fprintf(output, "\t.globl _%s\n"
-                            "\t	.p2align	2, 0x0\n"
+                            "\t	.p2align	2\n"
                             "_%s:\n"
                             "\t.long %s\n\n", node->symbol->text, node->symbol->text, node->son[1]->symbol->text); 
         }
         break;
-    case AST_PARAM:
-        fprintf(output, "\t.globl _%s\n"
-                       "_%s:\n"
-                       "\t.long 0\n", node->symbol->text, node->symbol->text);
-        break;
         case AST_DECVEC:
             break;
+        
         default:
             break;
     }
@@ -87,38 +86,10 @@ void generateASM(TAC* tac, AST* ast) {
     if(output == 0) {
         fprintf(stderr, "Error: Could not open output file\n");
         exit(1);
-    }
-
-   
-
-    fprintf(output, "	.section	__TEXT,__text,regular,pure_instructions\n\n"
-                    "\t.globl _main\n"
-                    "_main:\n"
-                    "\t.cfi_startproc\n"
-                    "; %%bb.0:\n"
-                    "\t sub	sp, sp, #32\n"
-                    "\t.cfi_def_cfa_offset 32\n"
-                     "\tstp	x29, x30, [sp, #16]             ; 16-byte Folded Spill\n"
-                     "\tadd	x29, sp, #16\n"
-                     "\t.cfi_def_cfa w29, 16\n"
-                     "\t.cfi_offset w30, -8\n"
-                     "\t.cfi_offset w29, -16\n"
-                     "\tmov	w8, #0\n"
-                     "\tstr	w8, [sp, #8]                    ; 4-byte Folded Spill\n"
-                     "\tstur	wzr, [x29, #-4]\n");
-                    // "\tmov	w0, #0\n"
-	                // "\tstr	wzr, [sp, #12]\n"); 
-    
-
+    } 
     
     allocateTAC(output, tac);
     
-
-    fprintf(output, 	"\tldr	w0, [sp, #8]                    ; 4-byte Folded Reload\n"
-                    "\tldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload\n"
-                    "\tadd	sp, sp, #32\n"
-                    "\tret\n"
-                    "\t.cfi_endproc\n\n");
 
     fprintf(output, "\t.section	__DATA,__data\n");
     allocateGlobalVariables(output, table);
@@ -166,7 +137,6 @@ void allocateTAC(FILE* output, TAC* root) {
         case TAC_PRINT:
             fprintf(output, 
                             ";PRINT\n"
-                            
                             "\tadrp	x8, _%s@PAGE\n"
                             "\tldr	w9, [x8, _%s@PAGEOFF]\n"
                             "\t\t; implicit-def: $x8\n"
@@ -176,23 +146,12 @@ void allocateTAC(FILE* output, TAC* root) {
                             "\tadrp	x0, l_.str.int@PAGE\n"
                             "\tadd	x0, x0, l_.str.int@PAGEOFF\n"
                             "\tbl	_printf\n"
-                            // "\tldr	w0, [sp, #8]                    ; 4-byte Folded Reload\n"
                             , tac->res->text, tac->res->text);
 
         break;
         case TAC_PRINTCHAR:
             fprintf(output, 
                             ";PRINT CHAR\n"
-                            // "\tsub	sp, sp, #32\n"
-                            // "\t.cfi_def_cfa_offset 32\n"
-                            // "\tstp	x29, x30, [sp, #16]             ; 16-byte Folded Spill\n"
-                            // "\tadd	x29, sp, #16\n"
-                            // "\t.cfi_def_cfa w29, 16\n"
-                            // "\t.cfi_offset w30, -8\n"
-                            // "\t.cfi_offset w29, -16\n"
-                            // "\tmov	w8, #0\n"
-                            // "\tstr	w8, [sp, #8]                    ; 4-byte Folded Spill\n"
-                            // "\tstur	wzr, [x29, #-4]\n"
                             "\tadrp	x8, _%s@PAGE\n"
                             "\tldr	w9, [x8, _%s@PAGEOFF]\n"
                             "\t\t; implicit-def: $x8\n"
@@ -202,9 +161,6 @@ void allocateTAC(FILE* output, TAC* root) {
                             "\tadrp	x0, l_.str.char@PAGE\n"
                             "\tadd	x0, x0, l_.str.char@PAGEOFF\n"
                             "\tbl	_printf\n", tac->res->text, tac->res->text);
-                            // "\tldr	w0, [sp, #8]                    ; 4-byte Folded Reload\n"
-                            // "\tldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload\n"
-                            // "\tadd	sp, sp, #32\n", tac->res->text, tac->res->text);
         break;
         case TAC_INPUT:
             fprintf(output, ";INPUT\n"
@@ -216,31 +172,64 @@ void allocateTAC(FILE* output, TAC* root) {
                             "\tbl	_scanf\n"
                             , tac->res->text, tac->res->text);
             break;
-        // case TAC_ARG:
-        //     fprintf(output, ";TAC_ARG\n"
-        //                     "\tadrp	x8, _%s@PAGE\n"
-        //                     "\tldr	w8, [x8, _%s@PAGEOFF]\n"
-        //                     "\tadrp	x9, _%s@PAGE\n"
-        //                     "\tstr	w8, [x9, _%s@PAGEOFF]\n", tac->op1->text, tac->op1->text, tac->res->text, tac->res->text);
-        //     break;
-        // case TAC_BEGINFUN:
-        //     fprintf(output, ";TAC_BEGINFUN\n"
-        //                     "\tsub	sp, sp, #16\n"
-        //                     "\t.cfi_def_cfa_offset 16\n");
-        //     break;
-        // case TAC_PARAM:
-        //     fprintf(output, ";TAC_PARAM\n"
-        //                     "\tadrp	x8, _%s@PAGE\n"
-        //                     "\tldr	w8, [x8, _%s@PAGEOFF]\n"
-        //                     "\tadrp	x9, _%s@PAGE\n"
-        //                     "\tstr	w8, [x9, _%s@PAGEOFF]\n", tac->op1->text, tac->op1->text, tac->res->text, tac->res->text);
-        //     break;
-        // case TAC_ENDFUN:
-        //     fprintf(output, ";TAC_ENDFUN\n"
-        //                     "\tadd	sp, sp, #16\n"
-        //                     "\tret\n"
-        //                     "\t.cfi_endproc\n");
-        //     break;
+        case TAC_BEGINFUN:
+            // fprintf(output, ";BEGINFUN\n"
+            //                 "\t.globl	_%s\n"
+            //                 "\t.p2align	2\n"
+            //                 "_%s:\n"
+            //                 "\t.cfi_startproc\n"
+            //                 "\t; %%bb.0:\n"
+	        //                 "\tsub	sp, sp, #16\n"
+	        //                 "\t.cfi_def_cfa_offset 16\n"
+	        //                 "\tstr	w0, [sp, #12]\n"
+            // , tac->res->text, tac->res->text);
+            fprintf(output, ";BEGINFUN\n"
+                            "\t.globl	_%s\n"
+                            "\t.p2align	2\n"
+                            "_%s:\n"
+                            "\t.cfi_startproc\n"
+                            "\t; %%bb.0:\n"
+                            "\tsub	sp, sp, #32\n"
+                            "\t.cfi_def_cfa_offset 32\n"
+                            "\tstp	x29, x30, [sp, #16]             ; 16-byte Folded Spill\n"
+                            "\tadd	x29, sp, #16\n"
+                            "\t.cfi_def_cfa w29, 16\n"
+                            "\t.cfi_offset w30, -8\n"
+                            "\t.cfi_offset w29, -16\n"
+                            "\tmov	w8, #0\n"
+                            "\tstr	w8, [sp, #8]                    ; 4-byte Folded Spill\n"
+                            "\tstur	wzr, [x29, #-4]\n", tac->res->text, tac->res->text);
+            break;
+        case TAC_LABEL:
+            // if(strcmp(tac->res->text, "main") == 0) {
+            //     fprintf(output, "\t.cfi_startproc\n"
+            //                     "; %%bb.0:\n"
+            //                     "\t sub	sp, sp, #32\n"
+            //                     "\t.cfi_def_cfa_offset 32\n"
+            //                     "\tstp	x29, x30, [sp, #16]             ; 16-byte Folded Spill\n"
+            //                     "\tadd	x29, sp, #16\n"
+            //                     "\t.cfi_def_cfa w29, 16\n"
+            //                     "\t.cfi_offset w30, -8\n"
+            //                     "\t.cfi_offset w29, -16\n"
+            //                     "\tmov	w8, #0\n"
+            //                     "\tstr	w8, [sp, #8]                    ; 4-byte Folded Spill\n"
+            //                     "\tstur	wzr, [x29, #-4]\n");
+            // } else {
+                fprintf(output, ";LABEL\n"
+                            "_%s:\n", tac->res->text);
+            //}
+            break;
+        case TAC_RETURN:
+            // fprintf(output, ";Return\n"
+            //                 "\tadd	sp, sp, #16\n"
+            //                 "\tret\n"
+            //                 "\t.cfi_endproc\n\n");
+            fprintf(output, ";Return\n"
+                            "\tldr	w0, [sp, #8]                    ; 4-byte Folded Reload\n"
+                            "\tldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload\n"
+                            "\tadd	sp, sp, #32\n"
+                            "\tret\n"
+                            "\t.cfi_endproc\n\n");
         default:
             break;
         }

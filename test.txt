@@ -1,15 +1,13 @@
 int a = 5;
-int b = 2;
+int b = 16;
 int p(int m);
 int main();
 code p {
-    a = 2;
-    b = 3;
     return b;
 }
 code main {
-    a = 5;
+    b = input(int);
     a = p(2);
     print(a);
-    return 2;
+    return 0;
 }

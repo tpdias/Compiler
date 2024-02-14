@@ -7,8 +7,10 @@
 
 void generateASM(TAC* tac, AST* ast);
 void allocateGlobalVariables(FILE* output, HASH_NODE** table);
+
 void allocateTemp(FILE* output, HASH_NODE* node);
 void allocateImediate(FILE* output, HASH_NODE* node);
+
 void allocateAST(FILE* output, AST* node);
 void allocateTAC(FILE* output, TAC* tac);
 

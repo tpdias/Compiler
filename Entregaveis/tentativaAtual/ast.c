@@ -1,3 +1,5 @@
+/*Thiago Parisotto Dias*/
+
 #include "ast.h"
 extern int getLineNumber();
 

@@ -1,3 +1,5 @@
+/*Thiago Parisotto Dias*/
+
 #include "asm.h"
 #include <string.h>
 #include "hash.h"
@@ -87,6 +89,7 @@ void generateASM(TAC* tac, AST* ast) {
         fprintf(stderr, "Error: Could not open output file\n");
         exit(1);
     } 
+    fprintf(output, ";Thiago Parisotto Dias - Compilador\n");
     
     allocateTAC(output, tac);
     
@@ -261,6 +264,30 @@ void allocateTAC(FILE* output, TAC* root) {
                             "\tbl	_%s\n"
                             "\tldr	x9, [sp]\n",
                              tac->op1->text);
+            break;
+        case TAC_LESS:
+            fprintf(output, ";LESS\n"
+                            "\tadrp	x8, _%s@PAGE\n"
+                            "\tldr	w8, [x8, _%s@PAGEOFF]\n"
+                            "\tadrp	x9, _%s@PAGE\n"
+                            "\tldr	w9, [x9, _%s@PAGEOFF]\n"
+                            "\tsubs	w8, w8, w9\n"
+                            "\tcset	w8, lt\n"
+                            "\tadrp	x9, _%s@PAGE\n"
+                            "\tstr	w8, [x9, _%s@PAGEOFF]\n",
+                             tac->op1->text, tac->op1->text, tac->op2->text, tac->op2->text, tac->res->text, tac->res->text);
+            break;
+        case TAC_IFZ:
+            fprintf(output, ";IFZ\n"
+                        "\tadrp	x8, _%s@PAGE\n"
+                        "\tldr	w8, [x8, _%s@PAGEOFF]\n"
+                        "\tcbz	w8, _%s\n",
+                            tac->op1->text, tac->op1->text, tac->res->text);
+            break;
+        case TAC_JUMP:
+            fprintf(output, ";JUMP\n"
+                            "\tb	_%s\n",
+                            tac->res->text);
             break;
         default:
             break;

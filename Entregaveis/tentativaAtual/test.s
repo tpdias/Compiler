@@ -19,40 +19,28 @@ _p:                                     ; @p
 _main:                                  ; @main
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #48
-	.cfi_def_cfa_offset 48
-	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
-	add	x29, sp, #32
-	.cfi_def_cfa w29, 16
-	.cfi_offset w30, -8
-	.cfi_offset w29, -16
-	mov	w8, #0
-	stur	w8, [x29, #-8]                  ; 4-byte Folded Spill
-	stur	wzr, [x29, #-4]
-	mov	x9, sp
-	adrp	x8, _b@PAGE
-	add	x8, x8, _b@PAGEOFF
-	str	x8, [x9]
-	adrp	x0, l_.str@PAGE
-	add	x0, x0, l_.str@PAGEOFF
-	str	x0, [sp, #16]                   ; 8-byte Folded Spill
-	bl	_scanf
-	adrp	x8, __2@PAGE
-	ldr	w0, [x8, __2@PAGEOFF]
-	bl	_p
-	mov	x9, x0
-	ldr	x0, [sp, #16]                   ; 8-byte Folded Reload
-	adrp	x8, _a@PAGE
-	str	w9, [x8, _a@PAGEOFF]
-	ldr	w9, [x8, _a@PAGEOFF]
-                                        ; implicit-def: $x8
-	mov	x8, x9
-	mov	x9, sp
-	str	x8, [x9]
-	bl	_printf
-	ldur	w0, [x29, #-8]                  ; 4-byte Folded Reload
-	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
-	add	sp, sp, #48
+	sub	sp, sp, #16
+	.cfi_def_cfa_offset 16
+	str	wzr, [sp, #12]
+	b	LBB1_1
+LBB1_1:                                 ; =>This Inner Loop Header: Depth=1
+	adrp	x8, _i@PAGE
+	ldr	w8, [x8, _i@PAGEOFF]
+	adrp	x9, __3@PAGE
+	ldr	w9, [x9, __3@PAGEOFF]
+	subs	w8, w8, w9
+	cset	w8, ge
+	tbnz	w8, #0, LBB1_3
+	b	LBB1_2
+LBB1_2:                                 ;   in Loop: Header=BB1_1 Depth=1
+	adrp	x9, _a@PAGE
+	ldr	w8, [x9, _a@PAGEOFF]
+	add	w8, w8, #1
+	str	w8, [x9, _a@PAGEOFF]
+	b	LBB1_1
+LBB1_3:
+	mov	w0, #0
+	add	sp, sp, #16
 	ret
 	.cfi_endproc
                                         ; -- End function
@@ -72,8 +60,11 @@ _b:
 __2:
 	.long	2                               ; 0x2
 
-	.section	__TEXT,__cstring,cstring_literals
-l_.str:                                 ; @.str
-	.asciz	"%d"
+	.globl	_i                              ; @i
+.zerofill __DATA,__common,_i,4,2
+	.globl	__3                             ; @_3
+	.p2align	2, 0x0
+__3:
+	.long	3                               ; 0x3
 
 .subsections_via_symbols

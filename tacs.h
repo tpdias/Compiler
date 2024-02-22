@@ -1,3 +1,5 @@
+/*Thiago Parisotto Dias*/
+
 #ifndef TAC_HEADER
 #define TAC_HEADER
 #include "hash.h"
